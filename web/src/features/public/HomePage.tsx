@@ -3,14 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { apiClient } from '@/api/client';
+import { SIHShowcaseCarousel } from '@/components/home/SIHShowcaseCarousel';
 
 export function HomePage() {
   const navigate = useNavigate();
   const [demoLoading, setDemoLoading] = useState(false);
   const [error, setError] = useState('');
-  
-  // Interactive Walkthrough State
-  const [activeStage, setActiveStage] = useState<'patient' | 'extraction' | 'physician' | 'fhir'>('patient');
 
   const handleStartDemo = async () => {
     setDemoLoading(true);
@@ -314,245 +312,11 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* ── 3. INTERACTIVE FOUR-STAGE DEMONSTRATION ── */}
-      <section style={{ paddingBlock: 'var(--space-20)', borderBottom: '1px solid var(--color-border)', backgroundColor: 'var(--color-surface)' }}>
-        <div className="container">
-          
-          <div style={{ textAlign: 'center', marginBottom: 'var(--space-12)' }}>
-            <span className="editorial-eyebrow" style={{ marginBottom: 'var(--space-3)' }}>
-              Interactive Workflow Demonstration
-            </span>
-            <h2 style={{
-              fontFamily: 'var(--font-display)',
-              fontSize: 'clamp(1.75rem, 3vw, 2.25rem)',
-              fontWeight: '700',
-              lineHeight: '1.25',
-              letterSpacing: '-0.02em',
-              margin: '0 0 var(--space-4)'
-            }}>
-              From raw patient voice to dual-coded clinical record.
-            </h2>
-            <p style={{
-              fontSize: 'var(--font-size-base)',
-              lineHeight: '1.65',
-              color: 'var(--color-text-secondary)',
-              maxWidth: '620px',
-              margin: '0 auto'
-            }}>
-              Follow how an unedited statement from a patient transforms into structured facts, undergoes patient confirmation, and reaches the physician workstation.
-            </p>
-          </div>
-
-          {/* Workflow Stage Navigation Tabs */}
-          <div style={{
-            display: 'flex',
-            justifyContent: 'center',
-            gap: 'var(--space-2)',
-            flexWrap: 'wrap',
-            marginBottom: 'var(--space-10)'
-          }}>
-            {([
-              { id: 'patient', step: '01', title: 'Patient Voice / Text' },
-              { id: 'extraction', step: '02', title: 'Structured Facts' },
-              { id: 'physician', step: '03', title: 'Physician Workstation' },
-              { id: 'fhir', step: '04', title: 'FHIR & NAMASTE Export' }
-            ] as const).map((tab) => {
-              const isActive = activeStage === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveStage(tab.id)}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 'var(--space-3)',
-                    padding: 'var(--space-3) var(--space-5)',
-                    background: isActive ? 'var(--gradient-primary)' : 'transparent',
-                    color: isActive ? '#ffffff' : 'var(--color-text-secondary)',
-                    border: `1px solid ${isActive ? 'var(--color-primary-600)' : 'var(--color-border)'}`,
-                    borderRadius: 'var(--radius-md)',
-                    cursor: 'pointer',
-                    fontSize: 'var(--font-size-sm)',
-                    fontWeight: isActive ? 'var(--font-weight-semibold)' : 'var(--font-weight-medium)',
-                    boxShadow: isActive ? '0 2px 8px rgba(230, 81, 0, 0.25)' : 'none',
-                    transition: 'all var(--transition-fast)'
-                  }}
-                >
-                  <span style={{
-                    fontSize: '11px',
-                    opacity: isActive ? 0.8 : 0.6,
-                    fontWeight: 'var(--font-weight-bold)'
-                  }}>
-                    {tab.step}
-                  </span>
-                  <span>{tab.title}</span>
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Stage Content Demonstration Panel */}
-          <div style={{
-            maxWidth: '860px',
-            margin: '0 auto',
-            border: '1px solid var(--color-border)',
-            borderRadius: 'var(--radius-lg)',
-            background: 'var(--color-background)',
-            overflow: 'hidden'
-          }}>
-            {activeStage === 'patient' && (
-              <div style={{ padding: 'var(--space-8)' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-6)' }}>
-                  <div>
-                    <span style={{ fontSize: '11px', fontWeight: 'var(--font-weight-bold)', color: 'var(--color-primary-700)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                      Step 01 • Patient Input Experience
-                    </span>
-                    <h3 style={{ margin: 'var(--space-1) 0 0', fontSize: 'var(--font-size-xl)', fontWeight: 'var(--font-weight-bold)' }}>
-                      "How is your digestion and daily appetite?"
-                    </h3>
-                  </div>
-                  <Badge variant="default">AYUSH PROTOCOL</Badge>
-                </div>
-
-                <div style={{ background: '#ffffff', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', padding: 'var(--space-6)', marginBottom: 'var(--space-6)' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', marginBottom: 'var(--space-3)', color: 'var(--color-primary-850)', fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-semibold)' }}>
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
-                    Voice Transcript Captured
-                  </div>
-                  <p style={{ margin: 0, fontSize: 'var(--font-size-base)', lineHeight: '1.65', color: 'var(--color-text-primary)' }}>
-                    "Doctor sahab, for the last three weeks after lunch, my stomach feels very heavy and starts burning. I feel bloated and get acidic burps. I prefer hot tea and warm water because cold water makes my stomach hurt."
-                  </p>
-                </div>
-
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)' }}>
-                  <span>Language: Hindi / English Mixed • Audio Duration: 14s</span>
-                  <span style={{ color: 'var(--color-primary-850)', fontWeight: 'var(--font-weight-semibold)' }}>Immutable Audio Asset Stored</span>
-                </div>
-              </div>
-            )}
-
-            {activeStage === 'extraction' && (
-              <div style={{ padding: 'var(--space-8)' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-6)' }}>
-                  <div>
-                    <span style={{ fontSize: '11px', fontWeight: 'var(--font-weight-bold)', color: 'var(--color-primary-700)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                      Step 02 • Structured Clinical Information
-                    </span>
-                    <h3 style={{ margin: 'var(--space-1) 0 0', fontSize: 'var(--font-size-xl)', fontWeight: 'var(--font-weight-bold)' }}>
-                      Extracted Clinical Slots & Provenance
-                    </h3>
-                  </div>
-                  <Badge variant="success">CONFIRMED BY PATIENT</Badge>
-                </div>
-
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)', marginBottom: 'var(--space-6)' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: 'var(--space-3) var(--space-4)', background: '#ffffff', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-sm)' }}>
-                    <div>
-                      <div style={{ fontSize: '11px', color: 'var(--color-text-muted)', fontWeight: 'var(--font-weight-semibold)', textTransform: 'uppercase' }}>CHIEF COMPLAINT</div>
-                      <div style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)' }}>Epigastric burning & post-prandial heaviness</div>
-                    </div>
-                    <span style={{ fontSize: '11px', color: 'var(--color-text-muted)' }}>Turn #1</span>
-                  </div>
-
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: 'var(--space-3) var(--space-4)', background: '#ffffff', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-sm)' }}>
-                    <div>
-                      <div style={{ fontSize: '11px', color: 'var(--color-text-muted)', fontWeight: 'var(--font-weight-semibold)', textTransform: 'uppercase' }}>AGNI (DIGESTIVE CAPACITY)</div>
-                      <div style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)' }}>Mandagni (Sluggish digestion with Amlapitta symptoms)</div>
-                    </div>
-                    <span style={{ fontSize: '11px', color: 'var(--color-text-muted)' }}>Turn #2</span>
-                  </div>
-
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: 'var(--space-3) var(--space-4)', background: '#ffffff', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-sm)' }}>
-                    <div>
-                      <div style={{ fontSize: '11px', color: 'var(--color-text-muted)', fontWeight: 'var(--font-weight-semibold)', textTransform: 'uppercase' }}>THERMAL SATMYA</div>
-                      <div style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)' }}>Sheeta Asahyata (Cold aversion, preference for warm beverages)</div>
-                    </div>
-                    <span style={{ fontSize: '11px', color: 'var(--color-text-muted)' }}>Turn #2</span>
-                  </div>
-                </div>
-
-                <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-secondary)', background: 'var(--color-surface-subtle)', padding: 'var(--space-3) var(--space-4)', borderRadius: 'var(--radius-sm)' }}>
-                  <strong>Safety Evaluation:</strong> Evaluated against Deterministic Safety Rules (RF-001 through RF-007). Zero acute red flags detected. Status: Routine OPD Queue.
-                </div>
-              </div>
-            )}
-
-            {activeStage === 'physician' && (
-              <div style={{ padding: 'var(--space-8)' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-6)' }}>
-                  <div>
-                    <span style={{ fontSize: '11px', fontWeight: 'var(--font-weight-bold)', color: 'var(--color-primary-700)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                      Step 03 • Physician Decision & Authority
-                    </span>
-                    <h3 style={{ margin: 'var(--space-1) 0 0', fontSize: 'var(--font-size-xl)', fontWeight: 'var(--font-weight-bold)' }}>
-                      Physician Reviews, Edits, and Verifies
-                    </h3>
-                  </div>
-                  <Badge variant="info">AUTHORITY WORKSPACE</Badge>
-                </div>
-
-                <div style={{ background: '#ffffff', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', padding: 'var(--space-6)', marginBottom: 'var(--space-6)' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-3)' }}>
-                    <span style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-bold)' }}>Chief Complaint Fact</span>
-                    <Badge variant="success">PHYSICIAN VERIFIED</Badge>
-                  </div>
-                  <p style={{ margin: '0 0 var(--space-3)', fontSize: 'var(--font-size-sm)', color: 'var(--color-text-primary)' }}>
-                    "Amlapitta with post-prandial epigastric burning (3 weeks duration)"
-                  </p>
-                  <div style={{ fontSize: '11px', color: 'var(--color-text-muted)' }}>
-                    Promoted by Dr. Ayush Sharma • Full clinical audit record stored with timestamp.
-                  </div>
-                </div>
-
-                <p style={{ margin: 0, fontSize: 'var(--font-size-xs)', lineHeight: '1.6', color: 'var(--color-text-secondary)' }}>
-                  The attending physician holds unilateral authority to override, reclassify, or add findings. AI outputs are treated strictly as drafts awaiting medical validation.
-                </p>
-              </div>
-            )}
-
-            {activeStage === 'fhir' && (
-              <div style={{ padding: 'var(--space-8)' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-6)' }}>
-                  <div>
-                    <span style={{ fontSize: '11px', fontWeight: 'var(--font-weight-bold)', color: 'var(--color-primary-700)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                      Step 04 • Interoperable Health Record
-                    </span>
-                    <h3 style={{ margin: 'var(--space-1) 0 0', fontSize: 'var(--font-size-xl)', fontWeight: 'var(--font-weight-bold)' }}>
-                      HL7 FHIR R4 & Ministry of Ayush NAMASTE
-                    </h3>
-                  </div>
-                  <Badge variant="success">DUAL CODED BUNDLE</Badge>
-                </div>
-
-                <div style={{ background: 'var(--color-neutral-900)', color: '#ffffff', padding: 'var(--space-4) var(--space-5)', borderRadius: 'var(--radius-md)', fontFamily: 'var(--font-mono)', fontSize: '12px', lineHeight: '1.55', overflowX: 'auto', marginBottom: 'var(--space-6)' }}>
-                  <span style={{ color: '#a78bfa' }}>"resourceType"</span>: <span style={{ color: '#34d399' }}>"Bundle"</span>,<br/>
-                  <span style={{ color: '#a78bfa' }}>"type"</span>: <span style={{ color: '#34d399' }}>"document"</span>,<br/>
-                  <span style={{ color: '#a78bfa' }}>"coding"</span>: [<br/>
-                  &nbsp;&nbsp;&#123;<br/>
-                  &nbsp;&nbsp;&nbsp;&nbsp;<span style={{ color: '#93c5fd' }}>"system"</span>: <span style={{ color: '#fef08a' }}>"http://snomed.info/sct"</span>,<br/>
-                  &nbsp;&nbsp;&nbsp;&nbsp;<span style={{ color: '#93c5fd' }}>"code"</span>: <span style={{ color: '#fef08a' }}>"405729008"</span>,<br/>
-                  &nbsp;&nbsp;&nbsp;&nbsp;<span style={{ color: '#93c5fd' }}>"display"</span>: <span style={{ color: '#fef08a' }}>"Hematemesis / Burning sensation"</span><br/>
-                  &nbsp;&nbsp;&#125;,<br/>
-                  &nbsp;&nbsp;&#123;<br/>
-                  &nbsp;&nbsp;&nbsp;&nbsp;<span style={{ color: '#93c5fd' }}>"system"</span>: <span style={{ color: '#fef08a' }}>"http://namstp.ayush.gov.in"</span>,<br/>
-                  &nbsp;&nbsp;&nbsp;&nbsp;<span style={{ color: '#93c5fd' }}>"code"</span>: <span style={{ color: '#fef08a' }}>"NAMASTE:AYU-DIS-003"</span>,<br/>
-                  &nbsp;&nbsp;&nbsp;&nbsp;<span style={{ color: '#93c5fd' }}>"display"</span>: <span style={{ color: '#fef08a' }}>"Amlapitta (Acid Peptic Disorder)"</span><br/>
-                  &nbsp;&nbsp;&#125;<br/>
-                  ]
-                </div>
-
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 'var(--font-size-xs)', color: 'var(--color-text-secondary)' }}>
-                  <span>Verified 20 Entries in Document Bundle</span>
-                  <span style={{ color: 'var(--color-primary-850)', fontWeight: 'var(--font-weight-semibold)' }}>ABDM Gate: Ready for Electronic Dispatch</span>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      </section>
+      {/* ── 3. INTERACTIVE SIH SHOWCASE CAROUSEL ── */}
+      <SIHShowcaseCarousel />
 
       {/* ── 4. FOUR CORE CLINICAL PILLARS ── */}
-      <section style={{ paddingBlock: 'var(--space-20)', borderBottom: '1px solid var(--color-border)' }}>
+      <section style={{ paddingBlock: 'var(--space-20)', borderBottom: '1px solid var(--color-border)', backgroundColor: 'var(--color-surface)' }}>
         <div className="container">
           
           <div style={{ textAlign: 'center', marginBottom: 'var(--space-16)' }}>
@@ -565,7 +329,8 @@ export function HomePage() {
               fontWeight: '700',
               lineHeight: '1.25',
               letterSpacing: '-0.02em',
-              margin: '0 0 var(--space-4)'
+              margin: '0 0 var(--space-4)',
+              color: 'var(--color-text-primary)'
             }}>
               Four foundational architectural principles.
             </h2>
@@ -587,92 +352,207 @@ export function HomePage() {
           }}>
             {/* Pillar 1 */}
             <div style={{
-              padding: 'var(--space-6)',
-              borderTop: '2px solid var(--color-primary-850)',
-              background: 'var(--color-surface)',
-              borderRadius: '0 0 var(--radius-md) var(--radius-md)',
-              borderInline: '1px solid var(--color-border)',
-              borderBottom: '1px solid var(--color-border)'
+              background: '#FFFFFF',
+              border: '1px solid var(--color-border)',
+              borderRadius: 'var(--radius-lg)',
+              overflow: 'hidden',
+              boxShadow: 'var(--shadow-card)',
+              display: 'flex',
+              flexDirection: 'column'
             }}>
-              <span style={{ fontSize: '11px', fontWeight: 'var(--font-weight-bold)', color: 'var(--color-primary-700)', letterSpacing: '0.05em' }}>
-                PILLAR 01
-              </span>
-              <h3 style={{ margin: 'var(--space-2) 0 var(--space-3)', fontSize: 'var(--font-size-lg)', fontWeight: 'var(--font-weight-bold)' }}>
-                The Pre-Consultation Boundary
-              </h3>
-              <p style={{ margin: 0, fontSize: 'var(--font-size-sm)', lineHeight: '1.6', color: 'var(--color-text-secondary)' }}>
-                SwasthyaSaathi operates strictly in the pre-consultation interval. It never diagnoses, prescribes, or makes clinical decisions. It serves as an intake assistant that structures patient facts for human review.
-              </p>
+              {/* Guaranteed visible 5px solid Saffron accent bar */}
+              <div style={{ height: '5px', width: '100%', background: 'linear-gradient(90deg, #FF792E 0%, #E65100 100%)' }} />
+              
+              <div style={{ padding: 'var(--space-6)', flex: 1, display: 'flex', flexDirection: 'column' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', marginBottom: 'var(--space-4)' }}>
+                  <div style={{
+                    width: '38px',
+                    height: '38px',
+                    borderRadius: 'var(--radius-md)',
+                    background: 'var(--color-primary-50)',
+                    color: 'var(--color-primary-700)',
+                    border: '1px solid var(--color-primary-200)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexShrink: 0
+                  }}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                      <line x1="12" y1="8" x2="12" y2="16"/>
+                      <line x1="8" y1="12" x2="16" y2="12"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--color-primary-700)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+                      PILLAR 01
+                    </span>
+                  </div>
+                </div>
+
+                <h3 style={{ margin: '0 0 var(--space-3)', fontSize: 'var(--font-size-lg)', fontWeight: 700, color: 'var(--color-text-primary)' }}>
+                  The Pre-Consultation Boundary
+                </h3>
+                <p style={{ margin: 0, fontSize: 'var(--font-size-sm)', lineHeight: '1.6', color: 'var(--color-text-secondary)' }}>
+                  SwasthyaSaathi operates strictly in the pre-consultation interval. It never diagnoses, prescribes, or makes clinical decisions. It serves as an intake assistant that structures patient facts for human review.
+                </p>
+              </div>
             </div>
 
             {/* Pillar 2 */}
             <div style={{
-              padding: 'var(--space-6)',
-              borderTop: '2px solid var(--color-emergency)',
-              background: 'var(--color-surface)',
-              borderRadius: '0 0 var(--radius-md) var(--radius-md)',
-              borderInline: '1px solid var(--color-border)',
-              borderBottom: '1px solid var(--color-border)'
+              background: '#FFFFFF',
+              border: '1px solid var(--color-border)',
+              borderRadius: 'var(--radius-lg)',
+              overflow: 'hidden',
+              boxShadow: 'var(--shadow-card)',
+              display: 'flex',
+              flexDirection: 'column'
             }}>
-              <span style={{ fontSize: '11px', fontWeight: 'var(--font-weight-bold)', color: 'var(--color-emergency-text)', letterSpacing: '0.05em' }}>
-                PILLAR 02
-              </span>
-              <h3 style={{ margin: 'var(--space-2) 0 var(--space-3)', fontSize: 'var(--font-size-lg)', fontWeight: 'var(--font-weight-bold)' }}>
-                Deterministic Red Flag Engine
-              </h3>
-              <p style={{ margin: 0, fontSize: 'var(--font-size-sm)', lineHeight: '1.6', color: 'var(--color-text-secondary)' }}>
-                Critical clinical safety rules (RF-001 through RF-007) run deterministically outside the LLM. Red flags immediately escalate in the triage queue and must be acknowledged by the physician before FHIR export.
-              </p>
+              {/* Guaranteed visible 5px solid Red Emergency accent bar */}
+              <div style={{ height: '5px', width: '100%', background: '#DC2626' }} />
+              
+              <div style={{ padding: 'var(--space-6)', flex: 1, display: 'flex', flexDirection: 'column' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', marginBottom: 'var(--space-4)' }}>
+                  <div style={{
+                    width: '38px',
+                    height: '38px',
+                    borderRadius: 'var(--radius-md)',
+                    background: '#FEF2F2',
+                    color: '#DC2626',
+                    border: '1px solid #FECACA',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexShrink: 0
+                  }}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                      <line x1="12" y1="9" x2="12" y2="13"/>
+                      <line x1="12" y1="17" x2="12.01" y2="17"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '11px', fontWeight: 700, color: '#DC2626', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+                      PILLAR 02
+                    </span>
+                  </div>
+                </div>
+
+                <h3 style={{ margin: '0 0 var(--space-3)', fontSize: 'var(--font-size-lg)', fontWeight: 700, color: 'var(--color-text-primary)' }}>
+                  Deterministic Red Flag Engine
+                </h3>
+                <p style={{ margin: 0, fontSize: 'var(--font-size-sm)', lineHeight: '1.6', color: 'var(--color-text-secondary)' }}>
+                  Critical clinical safety rules (RF-001 through RF-007) run deterministically outside the LLM. Red flags immediately escalate in the triage queue and must be acknowledged by the physician before FHIR export.
+                </p>
+              </div>
             </div>
 
             {/* Pillar 3 */}
             <div style={{
-              padding: 'var(--space-6)',
-              borderTop: '2px solid var(--color-accent-700)',
-              background: 'var(--color-surface)',
-              borderRadius: '0 0 var(--radius-md) var(--radius-md)',
-              borderInline: '1px solid var(--color-border)',
-              borderBottom: '1px solid var(--color-border)'
+              background: '#FFFFFF',
+              border: '1px solid var(--color-border)',
+              borderRadius: 'var(--radius-lg)',
+              overflow: 'hidden',
+              boxShadow: 'var(--shadow-card)',
+              display: 'flex',
+              flexDirection: 'column'
             }}>
-              <span style={{ fontSize: '11px', fontWeight: 'var(--font-weight-bold)', color: 'var(--color-accent-700)', letterSpacing: '0.05em' }}>
-                PILLAR 03
-              </span>
-              <h3 style={{ margin: 'var(--space-2) 0 var(--space-3)', fontSize: 'var(--font-size-lg)', fontWeight: 'var(--font-weight-bold)' }}>
-                Cryptographic Evidence Provenance
-              </h3>
-              <p style={{ margin: 0, fontSize: 'var(--font-size-sm)', lineHeight: '1.6', color: 'var(--color-text-secondary)' }}>
-                Every clinical fact links directly to its source: the exact voice audio timestamp, uploaded prescription snippet, or patient confirmation. Doctors can inspect origin evidence with a single tap.
-              </p>
+              {/* Guaranteed visible 5px solid Ashoka Navy accent bar */}
+              <div style={{ height: '5px', width: '100%', background: 'linear-gradient(90deg, #1D4ED8 0%, #06038D 100%)' }} />
+              
+              <div style={{ padding: 'var(--space-6)', flex: 1, display: 'flex', flexDirection: 'column' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', marginBottom: 'var(--space-4)' }}>
+                  <div style={{
+                    width: '38px',
+                    height: '38px',
+                    borderRadius: 'var(--radius-md)',
+                    background: '#EFF6FF',
+                    color: '#1D4ED8',
+                    border: '1px solid #BFDBFE',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexShrink: 0
+                  }}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                      <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                      <circle cx="12" cy="16" r="1"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '11px', fontWeight: 700, color: '#1D4ED8', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+                      PILLAR 03
+                    </span>
+                  </div>
+                </div>
+
+                <h3 style={{ margin: '0 0 var(--space-3)', fontSize: 'var(--font-size-lg)', fontWeight: 700, color: 'var(--color-text-primary)' }}>
+                  Cryptographic Evidence Provenance
+                </h3>
+                <p style={{ margin: 0, fontSize: 'var(--font-size-sm)', lineHeight: '1.6', color: 'var(--color-text-secondary)' }}>
+                  Every clinical fact links directly to its source: the exact voice audio timestamp, uploaded prescription snippet, or patient confirmation. Doctors can inspect origin evidence with a single tap.
+                </p>
+              </div>
             </div>
 
             {/* Pillar 4 */}
             <div style={{
-              padding: 'var(--space-6)',
-              borderTop: '2px solid var(--color-routine)',
-              background: 'var(--color-surface)',
-              borderRadius: '0 0 var(--radius-md) var(--radius-md)',
-              borderInline: '1px solid var(--color-border)',
-              borderBottom: '1px solid var(--color-border)'
+              background: '#FFFFFF',
+              border: '1px solid var(--color-border)',
+              borderRadius: 'var(--radius-lg)',
+              overflow: 'hidden',
+              boxShadow: 'var(--shadow-card)',
+              display: 'flex',
+              flexDirection: 'column'
             }}>
-              <span style={{ fontSize: '11px', fontWeight: 'var(--font-weight-bold)', color: 'var(--color-routine-text)', letterSpacing: '0.05em' }}>
-                PILLAR 04
-              </span>
-              <h3 style={{ margin: 'var(--space-2) 0 var(--space-3)', fontSize: 'var(--font-size-lg)', fontWeight: 'var(--font-weight-bold)' }}>
-                ABDM & NAMASTE Native
-              </h3>
-              <p style={{ margin: 0, fontSize: 'var(--font-size-sm)', lineHeight: '1.6', color: 'var(--color-text-secondary)' }}>
-                Fully compliant with India's Ayushman Bharat Digital Mission (ABDM) and Ministry of Ayush NAMASTE morbidity codes. Dual-coded with SNOMED CT for universal clinical interoperability.
-              </p>
+              {/* Guaranteed visible 5px solid India Green accent bar */}
+              <div style={{ height: '5px', width: '100%', background: '#046A38' }} />
+              
+              <div style={{ padding: 'var(--space-6)', flex: 1, display: 'flex', flexDirection: 'column' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', marginBottom: 'var(--space-4)' }}>
+                  <div style={{
+                    width: '38px',
+                    height: '38px',
+                    borderRadius: 'var(--radius-md)',
+                    background: '#F0FDF4',
+                    color: '#046A38',
+                    border: '1px solid #BBF7D0',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexShrink: 0
+                  }}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                      <polyline points="22 4 12 14.01 9 11.01"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '11px', fontWeight: 700, color: '#046A38', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+                      PILLAR 04
+                    </span>
+                  </div>
+                </div>
+
+                <h3 style={{ margin: '0 0 var(--space-3)', fontSize: 'var(--font-size-lg)', fontWeight: 700, color: 'var(--color-text-primary)' }}>
+                  ABDM & NAMASTE Native
+                </h3>
+                <p style={{ margin: 0, fontSize: 'var(--font-size-sm)', lineHeight: '1.6', color: 'var(--color-text-secondary)' }}>
+                  Fully compliant with India's Ayushman Bharat Digital Mission (ABDM) and Ministry of Ayush NAMASTE morbidity codes. Dual-coded with SNOMED CT for universal clinical interoperability.
+                </p>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
       {/* ── 5. FINAL INVITATION & CREDENTIALS ── */}
-      <section style={{ paddingBlock: 'var(--space-20)', backgroundColor: 'var(--color-surface)', backgroundImage: 'var(--gradient-flag-diagonal)', borderTop: '1px solid var(--color-border)' }}>
+      <section style={{ paddingBlock: 'var(--space-24)', backgroundColor: 'var(--color-surface)', backgroundImage: 'var(--gradient-flag-diagonal)', borderTop: '1px solid var(--color-border)' }}>
         <div className="container" style={{ maxWidth: '820px', textAlign: 'center' }}>
           
-          <span className="editorial-eyebrow" style={{ marginBottom: 'var(--space-3)' }}>
+          <span className="editorial-eyebrow" style={{ display: 'inline-block', marginBottom: 'var(--space-4)' }}>
             Experience the System
           </span>
           
