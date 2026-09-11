@@ -112,99 +112,276 @@ export function HomePage() {
           </div>
 
           {/* Right Column: Authentic Live Clinical Workstation Preview */}
+          {/* Right Column: Authentic Live Clinical Workstation Preview */}
           <div style={{
             background: 'var(--color-surface)',
             border: '1px solid var(--color-border)',
             borderRadius: 'var(--radius-lg)',
             boxShadow: 'var(--shadow-md)',
-            overflow: 'hidden'
+            overflow: 'hidden',
+            position: 'relative'
           }}>
-            {/* Header of Preview */}
+            {/* Top National Tricolor Micro-Accent */}
+            <div style={{
+              height: '4px',
+              width: '100%',
+              background: 'linear-gradient(90deg, #FF671F 0%, #FFA048 35%, #FFFFFF 50%, #138808 65%, #046A38 100%)'
+            }} />
+
+            {/* Institutional Clinical Encounter Header */}
             <div style={{
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
-              padding: 'var(--space-3) var(--space-4)',
-              background: 'var(--color-surface-subtle)',
+              padding: '10px 16px',
+              background: 'linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%)',
               borderBottom: '1px solid var(--color-border)',
-              fontSize: 'var(--font-size-xs)'
+              flexWrap: 'wrap',
+              gap: '8px'
             }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
-                <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--color-primary-600)' }}></span>
-                <span style={{ fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)' }}>Live Case Sheet</span>
-                <span style={{ color: 'var(--color-text-muted)' }}>• OPD-2026-4081</span>
+              {/* Left Encounter Badges */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                {/* Live Pulse Indicator */}
+                <div style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  background: 'rgba(22, 163, 74, 0.08)',
+                  border: '1px solid rgba(22, 163, 74, 0.25)',
+                  padding: '3px 9px',
+                  borderRadius: 'var(--radius-full)'
+                }}>
+                  <span style={{
+                    width: '7px',
+                    height: '7px',
+                    borderRadius: '50%',
+                    background: '#16A34A',
+                    boxShadow: '0 0 6px #16A34A'
+                  }} />
+                  <span style={{
+                    fontSize: '11px',
+                    fontWeight: 700,
+                    letterSpacing: '0.04em',
+                    color: '#15803D',
+                    textTransform: 'uppercase'
+                  }}>
+                    Live Case Sheet
+                  </span>
+                </div>
+
+                {/* Encounter Code Badge */}
+                <div style={{
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '11px',
+                  fontWeight: 600,
+                  color: '#334155',
+                  background: '#FFFFFF',
+                  padding: '3px 8px',
+                  borderRadius: '4px',
+                  border: '1px solid #CBD5E1',
+                  boxShadow: '0 1px 2px rgba(0,0,0,0.03)'
+                }}>
+                  OPD-2026-4081
+                </div>
               </div>
-              <Badge variant="success">READY FOR PHYSICIAN</Badge>
+
+              {/* Right Side Physician Status Pill */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span style={{
+                  background: 'rgba(255, 103, 31, 0.08)',
+                  border: '1px solid rgba(255, 103, 31, 0.25)',
+                  color: 'var(--color-primary-900)',
+                  fontSize: '11px',
+                  fontWeight: 700,
+                  padding: '3px 8px',
+                  borderRadius: '4px'
+                }}>
+                  TOKEN #14
+                </span>
+                <span style={{
+                  background: 'rgba(4, 106, 56, 0.08)',
+                  border: '1px solid rgba(4, 106, 56, 0.25)',
+                  color: '#046A38',
+                  fontSize: '11px',
+                  fontWeight: 700,
+                  padding: '3px 10px',
+                  borderRadius: 'var(--radius-full)',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '4px'
+                }}>
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                  READY FOR PHYSICIAN
+                </span>
+              </div>
             </div>
 
             {/* Inner Content of Preview */}
             <div style={{ padding: 'var(--space-5)' }}>
               
               {/* Patient Banner in Preview */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 'var(--space-4)', paddingBottom: 'var(--space-4)', borderBottom: '1px solid var(--color-border-subtle)' }}>
+              <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'flex-start',
+                marginBottom: 'var(--space-4)',
+                paddingBottom: 'var(--space-4)',
+                borderBottom: '1px solid var(--color-border-subtle)'
+              }}>
                 <div>
-                  <h4 style={{ margin: 0, fontSize: 'var(--font-size-base)', fontWeight: 'var(--font-weight-bold)' }}>
-                    Meera Devi
-                  </h4>
-                  <p style={{ margin: '2px 0 0', fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)' }}>
-                    46y • Female • Ayush Kayachikitsa OPD
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <h4 style={{ margin: 0, fontSize: 'var(--font-size-base)', fontWeight: 'var(--font-weight-bold)', color: 'var(--color-text-primary)' }}>
+                      Meera Devi
+                    </h4>
+                    <span style={{
+                      background: 'rgba(4, 106, 56, 0.08)',
+                      border: '1px solid rgba(4, 106, 56, 0.25)',
+                      color: '#046A38',
+                      fontSize: '10px',
+                      fontWeight: 700,
+                      padding: '1px 6px',
+                      borderRadius: '4px'
+                    }}>
+                      ABHA VERIFIED
+                    </span>
+                  </div>
+                  <p style={{ margin: '3px 0 0', fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)' }}>
+                    46y • Female • Ayush Kayachikitsa OPD • Room 104
                   </p>
                 </div>
+
                 <div style={{ textAlign: 'right' }}>
-                  <span style={{ fontSize: '11px', color: 'var(--color-text-muted)', display: 'block' }}>CHIEF CONCERN</span>
-                  <span style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-primary-850)' }}>
+                  <span style={{ fontSize: '10px', color: 'var(--color-text-muted)', display: 'block', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600 }}>
+                    CHIEF CONCERN
+                  </span>
+                  <span style={{
+                    fontSize: 'var(--font-size-xs)',
+                    fontWeight: 700,
+                    color: 'var(--color-primary-900)',
+                    background: 'rgba(255, 103, 31, 0.08)',
+                    padding: '2px 8px',
+                    borderRadius: '4px',
+                    display: 'inline-block',
+                    marginTop: '2px'
+                  }}>
                     Epigastric Burning & Heaviness
                   </span>
                 </div>
               </div>
 
               {/* Narrative Summary Preview */}
-              <div style={{ marginBottom: 'var(--space-4)', background: 'var(--color-surface-subtle)', padding: 'var(--space-3) var(--space-4)', borderRadius: 'var(--radius-sm)' }}>
-                <span style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 'var(--font-weight-bold)', color: 'var(--color-primary-700)', display: 'block', marginBottom: '4px' }}>
-                  Synthesized Clinical Narrative
-                </span>
+              <div style={{
+                marginBottom: 'var(--space-4)',
+                background: '#FAFBFD',
+                border: '1px solid #E2E8F0',
+                borderLeft: '3px solid var(--color-primary-600)',
+                padding: 'var(--space-3) var(--space-4)',
+                borderRadius: 'var(--radius-sm)'
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                  <span style={{
+                    fontSize: '10px',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                    fontWeight: 'var(--font-weight-bold)',
+                    color: 'var(--color-primary-700)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px'
+                  }}>
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                      <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+                      <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                    </svg>
+                    Synthesized Clinical Narrative
+                  </span>
+                  <span style={{ fontSize: '10px', color: 'var(--color-text-muted)', fontFamily: 'var(--font-mono)' }}>
+                    Hindi Audio • Verified
+                  </span>
+                </div>
                 <p style={{ margin: 0, fontSize: 'var(--font-size-xs)', lineHeight: '1.6', color: 'var(--color-text-secondary)' }}>
-                  Patient reports recurring epigastric burning for 3 weeks, aggravated within 45 minutes of post-lunch meals. Accompanied by disturbed sleep and mild morning fatigue. No history of melena or acute dysphagia.
+                  Patient reports recurring epigastric burning for 3 weeks, aggravated within 45 minutes of post-lunch meals. Accompanied by disturbed sleep and mild morning fatigue. No history of melena, hematemesis, or acute dysphagia.
                 </p>
               </div>
 
               {/* AYUSH Constitutional Quad */}
               <div>
-                <span style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 'var(--font-weight-bold)', color: 'var(--color-text-muted)', display: 'block', marginBottom: 'var(--space-2)' }}>
+                <span style={{
+                  fontSize: '10px',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                  fontWeight: 'var(--font-weight-bold)',
+                  color: 'var(--color-text-muted)',
+                  display: 'block',
+                  marginBottom: 'var(--space-2)'
+                }}>
                   AYUSH Constitutional Examination
                 </span>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 'var(--space-2)' }}>
-                  <div style={{ padding: 'var(--space-2) var(--space-3)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-sm)', background: '#ffffff' }}>
-                    <div style={{ fontSize: '10px', color: 'var(--color-text-muted)', fontWeight: 'var(--font-weight-medium)' }}>AGNI (DIGESTION)</div>
-                    <div style={{ fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)', marginTop: '2px' }}>
+                  <div style={{ padding: '8px 10px', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-sm)', background: '#FFFFFF' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                      <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#F59E0B' }} />
+                      <span style={{ fontSize: '10px', color: 'var(--color-text-muted)', fontWeight: 'var(--font-weight-medium)' }}>AGNI (DIGESTION)</span>
+                    </div>
+                    <div style={{ fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)', marginTop: '3px' }}>
                       Mandagni / Sluggish
                     </div>
                   </div>
-                  <div style={{ padding: 'var(--space-2) var(--space-3)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-sm)', background: '#ffffff' }}>
-                    <div style={{ fontSize: '10px', color: 'var(--color-text-muted)', fontWeight: 'var(--font-weight-medium)' }}>NIDRA (SLEEP)</div>
-                    <div style={{ fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)', marginTop: '2px' }}>
+                  <div style={{ padding: '8px 10px', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-sm)', background: '#FFFFFF' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                      <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#8B5CF6' }} />
+                      <span style={{ fontSize: '10px', color: 'var(--color-text-muted)', fontWeight: 'var(--font-weight-medium)' }}>NIDRA (SLEEP)</span>
+                    </div>
+                    <div style={{ fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)', marginTop: '3px' }}>
                       Khandita / Fragmented
                     </div>
                   </div>
-                  <div style={{ padding: 'var(--space-2) var(--space-3)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-sm)', background: '#ffffff' }}>
-                    <div style={{ fontSize: '10px', color: 'var(--color-text-muted)', fontWeight: 'var(--font-weight-medium)' }}>SATMYA (WEATHER)</div>
-                    <div style={{ fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)', marginTop: '2px' }}>
+                  <div style={{ padding: '8px 10px', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-sm)', background: '#FFFFFF' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                      <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#0284C7' }} />
+                      <span style={{ fontSize: '10px', color: 'var(--color-text-muted)', fontWeight: 'var(--font-weight-medium)' }}>SATMYA (WEATHER)</span>
+                    </div>
+                    <div style={{ fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)', marginTop: '3px' }}>
                       Sheeta Asahyata (Cold Sensitive)
                     </div>
                   </div>
-                  <div style={{ padding: 'var(--space-2) var(--space-3)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-sm)', background: '#ffffff' }}>
-                    <div style={{ fontSize: '10px', color: 'var(--color-text-muted)', fontWeight: 'var(--font-weight-medium)' }}>AHARA (DIET)</div>
-                    <div style={{ fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)', marginTop: '2px' }}>
-                      Irregular Meal Times • Spicy
+                  <div style={{ padding: '8px 10px', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-sm)', background: '#FFFFFF' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                      <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#EA580C' }} />
+                      <span style={{ fontSize: '10px', color: 'var(--color-text-muted)', fontWeight: 'var(--font-weight-medium)' }}>AHARA (DIET)</span>
+                    </div>
+                    <div style={{ fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)', marginTop: '3px' }}>
+                      Irregular Meals • Spicy
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* Provenance Footer in Preview */}
-              <div style={{ marginTop: 'var(--space-4)', paddingTop: 'var(--space-3)', borderTop: '1px solid var(--color-border-subtle)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '11px', color: 'var(--color-text-muted)' }}>
-                <span>Provenance: 4 Voice Turns • 1 Prescription Scan</span>
-                <span style={{ color: 'var(--color-primary-850)', fontWeight: 'var(--font-weight-semibold)' }}>Verified Patient Confirmation</span>
+              <div style={{
+                marginTop: 'var(--space-4)',
+                paddingTop: 'var(--space-3)',
+                borderTop: '1px solid var(--color-border-subtle)',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                fontSize: '11px',
+                color: 'var(--color-text-muted)'
+              }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <span>🎙️ 4 Voice Turns</span>
+                  <span>•</span>
+                  <span>📄 1 Rx Scan</span>
+                </span>
+                <span style={{ color: 'var(--color-primary-850)', fontWeight: 'var(--font-weight-semibold)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                  </svg>
+                  Verified Patient Confirmation
+                </span>
               </div>
             </div>
           </div>
