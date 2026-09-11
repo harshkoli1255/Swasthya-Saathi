@@ -107,9 +107,9 @@ export function DoctorLayout() {
         boxShadow: '0 1px 2px rgba(13, 34, 24, 0.03)'
       }}>
         <div style={{
-          maxWidth: '1440px',
+          maxWidth: '1600px',
           margin: '0 auto',
-          padding: '0 var(--space-6)',
+          padding: '0 32px',
           height: '64px',
           display: 'flex',
           alignItems: 'center',

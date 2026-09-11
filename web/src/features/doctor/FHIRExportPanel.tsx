@@ -76,19 +76,19 @@ export function FHIRExportPanel({ encounterId }: { encounterId: string }) {
 
   return (
     <div style={{
-      background: 'var(--color-surface)',
-      border: '1px solid var(--color-border)',
-      borderRadius: 'var(--radius-md)',
-      padding: 'var(--space-6)',
-      boxShadow: 'var(--shadow-subtle)',
+      backgroundColor: '#FFFFFF',
+      border: '1px solid #E2E8F0',
+      borderRadius: '14px',
+      padding: '18px 20px',
+      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.03)',
       display: 'flex',
       flexDirection: 'column',
-      gap: 'var(--space-5)'
+      gap: '16px'
     }}>
       <div>
         <div style={{
           fontSize: '11px',
-          fontWeight: 'var(--font-weight-bold)',
+          fontWeight: 700,
           textTransform: 'uppercase',
           letterSpacing: '0.08em',
           color: 'var(--color-primary-800)',
@@ -97,17 +97,16 @@ export function FHIRExportPanel({ encounterId }: { encounterId: string }) {
           ABDM & FHIR R4 Interoperability
         </div>
         <h3 style={{
-          fontFamily: 'var(--font-display)',
-          fontSize: 'var(--font-size-base)',
-          fontWeight: 'var(--font-weight-bold)',
-          color: 'var(--color-text-primary)',
+          fontSize: '15px',
+          fontWeight: 700,
+          color: '#0F172A',
           margin: 0
         }}>
           National Health Stack Export
         </h3>
         <p style={{
           fontSize: '12px',
-          color: 'var(--color-text-secondary)',
+          color: '#64748B',
           marginTop: '4px',
           marginBottom: 0,
           lineHeight: '1.4'
@@ -118,12 +117,12 @@ export function FHIRExportPanel({ encounterId }: { encounterId: string }) {
 
       {error && (
         <div style={{
-          padding: 'var(--space-3)',
-          background: 'var(--color-emergency-bg)',
-          color: 'var(--color-emergency-text)',
-          border: '1px solid rgba(176, 58, 46, 0.2)',
-          borderRadius: 'var(--radius-sm)',
-          fontSize: 'var(--font-size-xs)'
+          padding: '10px 14px',
+          background: '#FEF2F2',
+          color: '#991B1B',
+          border: '1px solid #FCA5A5',
+          borderRadius: '8px',
+          fontSize: '12px'
         }}>
           {error}
         </div>
@@ -133,24 +132,24 @@ export function FHIRExportPanel({ encounterId }: { encounterId: string }) {
       <div style={{
         display: 'grid',
         gridTemplateColumns: '1fr 1fr',
-        gap: 'var(--space-3)',
-        padding: 'var(--space-3)',
-        background: 'var(--color-surface-hover)',
-        borderRadius: 'var(--radius-sm)',
-        border: '1px solid var(--color-border-subtle)'
+        gap: '12px',
+        padding: '12px 14px',
+        backgroundColor: '#F8FAFC',
+        borderRadius: '10px',
+        border: '1px solid #E2E8F0'
       }}>
         <div>
-          <div style={{ fontSize: '11px', color: 'var(--color-text-muted)' }}>Eligible Resources</div>
-          <div style={{ fontSize: '18px', fontWeight: 'var(--font-weight-bold)', color: 'var(--color-text-primary)' }}>
+          <div style={{ fontSize: '11px', color: '#64748B', fontWeight: 600 }}>Eligible Resources</div>
+          <div style={{ fontSize: '18px', fontWeight: 800, color: '#0F172A' }}>
             {eligibility?.eligible_resources?.length || 0}
           </div>
         </div>
         <div>
-          <div style={{ fontSize: '11px', color: 'var(--color-text-muted)' }}>Blocked / Unconfirmed</div>
+          <div style={{ fontSize: '11px', color: '#64748B', fontWeight: 600 }}>Blocked / Unconfirmed</div>
           <div style={{
             fontSize: '18px',
-            fontWeight: 'var(--font-weight-bold)',
-            color: (eligibility?.blocked_resources?.length || 0) > 0 ? 'var(--color-urgent-text)' : 'var(--color-text-secondary)'
+            fontWeight: 800,
+            color: (eligibility?.blocked_resources?.length || 0) > 0 ? '#C2410C' : '#64748B'
           }}>
             {eligibility?.blocked_resources?.length || 0}
           </div>
