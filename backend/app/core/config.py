@@ -51,7 +51,17 @@ class Settings(BaseSettings):
 
     # Feature Flags
     feature_cloud_ai_fallback: bool = False
-    feature_abdm_sandbox: bool = False
+    feature_abdm_sandbox: bool = True
+
+    # ABDM (Ayushman Bharat Digital Mission) Official Sandbox Configuration
+    abdm_env: str = "sandbox"  # "development" | "sandbox" | "production"
+    abdm_gateway_url: str = "https://dev.abdm.gov.in"
+    abdm_abha_url: str = "https://abhasbx.abdm.gov.in/abha/api"
+    abdm_x_cm_id: str = "sbx"
+    abdm_client_id: str = ""
+    abdm_client_secret: str = ""
+    abdm_hip_id: str = "SWASTHYA_OPD_01"
+    abdm_facility_id: str = ""
 
     @model_validator(mode='after')
     def validate_production_settings(self) -> 'Settings':

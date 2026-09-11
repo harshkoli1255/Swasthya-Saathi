@@ -84,6 +84,13 @@ def get_session_status(request: Request, public_token: str, db: Session = Depend
         patient_name=patient.full_name,
         patient_age=patient.age,
         patient_sex=patient.sex,
+        verification_status=patient.verification_status,
+        verification_method=patient.verification_method,
+        verification_source=patient.verification_source,
+        verified_at=patient.verified_at,
+        verification_reference=patient.verification_reference,
+        abha_number=patient.abha_number,
+        abha_address=patient.abha_address,
         language=session.language
     )
 
@@ -112,12 +119,20 @@ def submit_consent(request: Request, public_token: str, payload: ConsentPayload,
     
     db.commit()
     db.refresh(session)
+    patient = session.encounter.patient
     return SessionStatus(
         public_token=session.public_token,
         state=session.state,
-        patient_name=session.encounter.patient.full_name,
-        patient_age=session.encounter.patient.age,
-        patient_sex=session.encounter.patient.sex,
+        patient_name=patient.full_name,
+        patient_age=patient.age,
+        patient_sex=patient.sex,
+        verification_status=patient.verification_status,
+        verification_method=patient.verification_method,
+        verification_source=patient.verification_source,
+        verified_at=patient.verified_at,
+        verification_reference=patient.verification_reference,
+        abha_number=patient.abha_number,
+        abha_address=patient.abha_address,
         language=session.language
     )
 

@@ -10,7 +10,12 @@ import {
   FHIREligibilityResponse,
   FHIRExportResult,
   FHIRExportRecord,
-  VoiceUploadResponse
+  VoiceUploadResponse,
+  ABDMStatusResponse,
+  ABDMRequestOTPPayload,
+  ABDMRequestOTPResponse,
+  ABDMVerifyOTPPayload,
+  ABDMVerifyOTPResponse
 } from '@/types';
 
 // In Stage 1, we use mock endpoints to allow UI development to proceed
@@ -247,6 +252,52 @@ export const apiClient = {
       })
     });
     if (!response.ok) throw new Error('Failed to resolve clinical conflict');
+    return response.json();
+  },
+
+  // --- ABDM Sandbox Patient Verification ---
+  async getABDMStatus(): Promise<ABDMStatusResponse> {
+    const response = await fetch(`${API_BASE}/abdm/status`);
+    if (!response.ok) throw new Error('Failed to fetch ABDM status');
+    return response.json();
+  },
+
+  async requestABDMOTP(publicToken: string, payload: ABDMRequestOTPPayload): Promise<ABDMRequestOTPResponse> {
+    const response = await fetch(`${API_BASE}/abdm/${publicToken}/request-otp`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err.detail || 'Failed to request ABDM OTP');
+    }
+    return response.json();
+  },
+
+  async verifyABDMOTP(publicToken: string, payload: ABDMVerifyOTPPayload): Promise<ABDMVerifyOTPResponse> {
+    const response = await fetch(`${API_BASE}/abdm/${publicToken}/verify-otp`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err.detail || 'ABDM verification failed');
+    }
+    return response.json();
+  },
+
+  async processScanShare(publicToken: string, qrCodeData: string): Promise<ABDMVerifyOTPResponse> {
+    const response = await fetch(`${API_BASE}/abdm/${publicToken}/scan-share`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ qr_code_data: qrCodeData })
+    });
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err.detail || 'Scan & Share processing failed');
+    }
     return response.json();
   }
 };

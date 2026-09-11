@@ -58,7 +58,55 @@ export interface SessionStatusResponse {
   patient_name: string;
   patient_age?: number;
   patient_sex?: string;
+  verification_status?: string;
+  verification_method?: string;
+  verification_source?: string;
+  verified_at?: string;
+  verification_reference?: string;
+  abha_number?: string;
+  abha_address?: string;
   language: string;
+}
+
+export interface ABDMStatusResponse {
+  environment: string;
+  is_sandbox: boolean;
+  is_configured: boolean;
+  gateway_url: string;
+  supported_methods: string[];
+}
+
+export interface ABDMRequestOTPPayload {
+  auth_mode: 'AADHAAR_OTP' | 'ABHA_OTP' | 'MOBILE_OTP';
+  identifier: string;
+}
+
+export interface ABDMRequestOTPResponse {
+  success: boolean;
+  txn_id?: string;
+  message: string;
+  error_code?: string;
+}
+
+export interface ABDMVerifyOTPPayload {
+  auth_mode: 'AADHAAR_OTP' | 'ABHA_OTP' | 'MOBILE_OTP';
+  txn_id: string;
+  otp: string;
+}
+
+export interface ABDMVerifyOTPResponse {
+  success: boolean;
+  verification_status: string;
+  verification_source: string;
+  verification_method: string;
+  patient_name: string;
+  abha_number: string;
+  abha_address: string;
+  age?: number;
+  gender?: string;
+  message: string;
+  has_conflict?: boolean;
+  error_code?: string;
 }
 
 export interface NextQuestionResponse {

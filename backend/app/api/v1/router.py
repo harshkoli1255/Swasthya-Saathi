@@ -6,6 +6,7 @@ from app.api.v1.patients import router as patients_router
 from app.api.v1.queue import router as queue_router
 from app.api.v1.intake import router as intake_router
 from app.api.v1.encounters import router as encounters_router
+from app.api.v1.abdm import router as abdm_router
 
 api_router = APIRouter(prefix="/api/v1")
 
@@ -15,3 +16,4 @@ api_router.include_router(patients_router)
 api_router.include_router(queue_router)
 api_router.include_router(intake_router)
 api_router.include_router(encounters_router)
+api_router.include_router(abdm_router)

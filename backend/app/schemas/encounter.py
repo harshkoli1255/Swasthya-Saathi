@@ -17,6 +17,12 @@ class PatientDemographics(BaseModel):
     age: Optional[int]
     sex: Optional[str]
     phone: Optional[str]
+    abha_number: Optional[str] = None
+    abha_address: Optional[str] = None
+    verification_status: Optional[str] = "UNVERIFIED"
+    verification_method: Optional[str] = None
+    verification_source: Optional[str] = None
+    verified_at: Optional[datetime] = None
 
 from app.schemas.clinical import StructuredSummaryResult
 

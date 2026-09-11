@@ -115,14 +115,56 @@ export function PatientOverviewPage() {
                 {encounter.patient.full_name.charAt(0)}
               </div>
               <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-4)', marginBottom: 'var(--space-1)' }}>
-                  <h1 className="text-2xl font-bold" style={{ color: '#ffffff' }}>{encounter.patient.full_name}</h1>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-4)', marginBottom: 'var(--space-1)', flexWrap: 'wrap' }}>
+                  <h1 className="text-2xl font-bold" style={{ color: '#ffffff', margin: 0 }}>{encounter.patient.full_name}</h1>
                   <Badge variant={encounter.triage_level.toLowerCase() as any}>{encounter.triage_level}</Badge>
+                  {encounter.patient.verification_status?.startsWith('VERIFIED') ? (
+                    <span style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                      fontSize: '11px',
+                      fontWeight: '600',
+                      color: '#4ade80',
+                      backgroundColor: 'rgba(34, 197, 94, 0.15)',
+                      border: '1px solid rgba(74, 222, 128, 0.3)',
+                      borderRadius: '12px',
+                      padding: '2px 8px'
+                    }}>
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                        <polyline points="9 12 11 14 15 10" />
+                      </svg>
+                      ABDM Verified ({encounter.patient.verification_method || 'Sandbox'})
+                    </span>
+                  ) : (
+                    <span style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                      fontSize: '11px',
+                      color: 'rgba(255, 255, 255, 0.6)',
+                      backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                      border: '1px solid rgba(255, 255, 255, 0.15)',
+                      borderRadius: '12px',
+                      padding: '2px 8px'
+                    }}>
+                      Self-Reported Identity
+                    </span>
+                  )}
                 </div>
-                <div style={{ display: 'flex', gap: 'var(--space-4)', fontSize: 'var(--font-size-sm)', color: 'rgba(255, 255, 255, 0.75)' }}>
+                <div style={{ display: 'flex', gap: 'var(--space-4)', fontSize: 'var(--font-size-sm)', color: 'rgba(255, 255, 255, 0.75)', alignItems: 'center', flexWrap: 'wrap' }}>
                   <span>{encounter.patient.age}y • {encounter.patient.sex}</span>
                   <span style={{ opacity: 0.5 }}>|</span>
                   <span style={{ fontFamily: 'var(--font-mono)' }}>{encounter.opd_id}</span>
+                  {(encounter.patient.abha_address || encounter.patient.abha_number) && (
+                    <>
+                      <span style={{ opacity: 0.5 }}>|</span>
+                      <span style={{ color: '#86efac', fontFamily: 'var(--font-mono)', fontSize: '12px' }}>
+                        ABHA: {encounter.patient.abha_address || encounter.patient.abha_number}
+                      </span>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
