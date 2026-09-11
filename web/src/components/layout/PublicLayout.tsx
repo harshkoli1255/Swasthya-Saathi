@@ -12,24 +12,6 @@ export function PublicLayout() {
       {/* ── TOP NATIONAL TRICOLOR RIBBON ── */}
       <div className="tiranga-ribbon" />
 
-      {/* ── TOP ANNOUNCEMENT / CONTEXT STRIP ── */}
-      <div style={{
-        background: '#2A0D04',
-        color: '#FFF7ED',
-        padding: 'var(--space-2) var(--space-4)',
-        fontSize: 'var(--font-size-xs)',
-        textAlign: 'center',
-        borderBottom: '1px solid rgba(255, 103, 31, 0.25)',
-        letterSpacing: '0.02em',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: 'var(--space-2)'
-      }}>
-        <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--color-tiranga-saffron)' }}></span>
-        <span>Operational Standard: <strong>AI Assists. Attending Physician Decides.</strong> National Digital Health (ABDM) & Ministry of Ayush NAMASTE aligned.</span>
-      </div>
-
       {/* ── MAIN NAVIGATION BAR ── */}
       <header style={{
         background: 'rgba(255, 253, 250, 0.95)',
