@@ -1,0 +1,57 @@
+.ui-card {
+  background-color: var(--color-surface);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: box-shadow var(--transition-base), border-color var(--transition-base);
+}
+
+/* ── Variants ── */
+.ui-card--default {
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+}
+
+.ui-card--elevated {
+  border: 1px solid transparent;
+  box-shadow: var(--shadow-md);
+}
+
+.ui-card--bordered {
+  border: 1px solid var(--color-border);
+  box-shadow: none;
+}
+
+/* ── Content Areas ── */
+.ui-card:not(.ui-card--no-padding) .ui-card__header,
+.ui-card:not(.ui-card--no-padding) .ui-card__content,
+.ui-card:not(.ui-card--no-padding) .ui-card__footer {
+  padding: var(--space-6);
+}
+
+.ui-card__header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.ui-card__title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  line-height: var(--line-height-tight);
+  margin: 0;
+}
+
+.ui-card__description {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  line-height: var(--line-height-normal);
+  margin: 0;
+}
+
+.ui-card__footer {
+  display: flex;
+  align-items: center;
+  border-top: 1px solid var(--color-border-light);
+  background-color: var(--color-surface-muted);
+}

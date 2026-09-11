@@ -1,0 +1,12 @@
+.ui-label {
+  display: inline-block;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-2);
+}
+
+.ui-label__required {
+  color: var(--color-emergency-text);
+  margin-left: 2px;
+}

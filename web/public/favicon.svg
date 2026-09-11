@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256" fill="none">
+  <defs>
+    <linearGradient id="swasthyaBgFav" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#194833"/>
+      <stop offset="100%" stop-color="#0E2D1E"/>
+    </linearGradient>
+  </defs>
+  <rect x="14" y="14" width="228" height="228" rx="58" ry="58" fill="url(#swasthyaBgFav)"/>
+  <rect x="14.5" y="14.5" width="227" height="227" rx="57.5" ry="57.5" stroke="rgba(255, 255, 255, 0.2)" stroke-width="2"/>
+  <path
+    d="M 86 166 
+       C 75 166 69 156 71 144 
+       C 73 108 94 76 128 76 
+       C 162 76 183 108 185 144 
+       C 187 156 181 166 170 166 
+       C 162 166 156 160 152 156 
+       L 128 138 
+       L 104 156 
+       C 100 160 94 166 86 166 Z"
+    fill="none"
+    stroke="#FFFFFF"
+    stroke-width="18"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+  <rect x="119" y="93" width="18" height="48" rx="9" ry="9" fill="#FFFFFF"/>
+  <rect x="104" y="108" width="48" height="18" rx="9" ry="9" fill="#FFFFFF"/>
+</svg>
