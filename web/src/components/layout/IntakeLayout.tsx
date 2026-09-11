@@ -25,8 +25,10 @@ export function IntakeLayout() {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', backgroundColor: 'var(--color-background)' }}>
-      
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', backgroundColor: 'var(--color-background)', backgroundImage: 'var(--gradient-flag-diagonal)' }}>
+      {/* National Tricolor Micro-Ribbon */}
+      <div className="tiranga-ribbon" />
+
       {/* ── CALM CLINICAL HEADER ── */}
       <header style={{ 
         background: 'var(--color-surface)', 
@@ -56,9 +58,10 @@ export function IntakeLayout() {
         <div style={{ width: '100%', height: '3px', background: 'var(--color-border-subtle)' }}>
           <div style={{ 
             height: '100%', 
-            background: 'var(--color-primary-850)', 
+            background: 'var(--gradient-primary)', 
             width: `${getProgress()}%`,
-            transition: 'width 0.4s cubic-bezier(0.16, 1, 0.3, 1)'
+            transition: 'width 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+            boxShadow: '0 0 6px rgba(230, 81, 0, 0.4)'
           }} />
         </div>
       </header>

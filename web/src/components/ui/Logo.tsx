@@ -38,7 +38,7 @@ export function Logo({
           objectFit: 'contain',
           borderRadius: `${Math.max(6, Math.round(size * 0.22))}px`,
           display: 'block',
-          boxShadow: '0 1px 3px rgba(13, 34, 24, 0.12)',
+          boxShadow: '0 2px 8px rgba(230, 81, 0, 0.18)',
           flexShrink: 0,
         }}
       />

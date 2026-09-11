@@ -4,21 +4,22 @@
   justify-content: center;
   gap: var(--space-2);
   white-space: nowrap;
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-md);
   font-family: var(--font-sans);
   font-weight: var(--font-weight-medium);
-  transition: all var(--transition-base);
+  transition: all var(--transition-fast);
   cursor: pointer;
   border: 1px solid transparent;
   outline: none;
 }
 
 .ui-button:focus-visible {
-  box-shadow: var(--shadow-focus);
+  outline: 2px solid var(--color-primary-600);
+  outline-offset: 2px;
 }
 
 .ui-button:disabled {
-  opacity: 0.6;
+  opacity: 0.55;
   cursor: not-allowed;
 }
 
@@ -47,19 +48,21 @@
 
 /* ── Variants ── */
 .ui-button--primary {
-  background-color: var(--color-primary-850);
+  background: linear-gradient(135deg, #FF792E 0%, #E65100 100%);
   color: #ffffff;
-  border: 1px solid var(--color-primary-900);
-  box-shadow: var(--shadow-subtle);
+  border: 1px solid #C2410C;
+  box-shadow: 0 2px 8px rgba(230, 81, 0, 0.28);
 }
 
 .ui-button--primary:hover:not(:disabled) {
-  background-color: var(--color-primary-900);
-  box-shadow: var(--shadow-sm);
+  background: linear-gradient(135deg, #FF671F 0%, #C2410C 100%);
+  box-shadow: 0 4px 14px rgba(230, 81, 0, 0.38);
+  transform: translateY(-1px);
 }
 
 .ui-button--primary:active:not(:disabled) {
-  background-color: var(--color-primary-950);
+  background: #9A3412;
+  transform: translateY(0);
 }
 
 .ui-button--secondary {
@@ -72,6 +75,7 @@
 .ui-button--secondary:hover:not(:disabled) {
   background-color: var(--color-surface-hover);
   border-color: var(--color-border-strong);
+  color: var(--color-primary-800);
 }
 
 .ui-button--outline {
@@ -81,8 +85,9 @@
 }
 
 .ui-button--outline:hover:not(:disabled) {
-  background-color: var(--color-surface-hover);
-  border-color: var(--color-border-focus);
+  background-color: var(--color-primary-50);
+  border-color: var(--color-primary-600);
+  color: var(--color-primary-850);
 }
 
 .ui-button--ghost {
@@ -92,6 +97,7 @@
 
 .ui-button--ghost:hover:not(:disabled) {
   background-color: var(--color-surface-hover);
+  color: var(--color-primary-800);
 }
 
 .ui-button--danger {

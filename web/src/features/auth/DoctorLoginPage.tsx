@@ -37,89 +37,95 @@ export function DoctorLoginPage() {
   };
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: 'var(--color-surface)' }}>
-      
-      {/* Left side: Dignified Institutional Identity (Hidden on mobile) */}
-      <div 
-        style={{
-          flex: 1,
-          backgroundColor: 'var(--color-primary-950)',
-          color: '#ffffff',
-          padding: 'var(--space-16)',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-          borderRight: '1px solid rgba(255,255,255,0.08)'
-        }}
-        className="hidden-mobile"
-      >
-        <div>
-          {/* Emblem & Department */}
-          <div style={{ marginBottom: 'var(--space-16)' }}>
-            <Logo size={40} showText={true} variant="light" subtitle="Clinical Provider Access" />
-          </div>
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+      {/* National Tricolor Micro-Ribbon */}
+      <div className="tiranga-ribbon" />
 
-          <h1 style={{
-            fontFamily: 'var(--font-display)',
-            fontSize: 'clamp(2rem, 3.5vw, 2.75rem)',
-            fontWeight: '700',
-            lineHeight: '1.25',
-            letterSpacing: '-0.02em',
-            marginBottom: 'var(--space-6)',
-            maxWidth: '460px',
-            color: '#ffffff'
-          }}>
-            Structured clinical intelligence before you open the door.
-          </h1>
-
-          <p style={{
-            fontSize: 'var(--font-size-base)',
-            color: 'var(--color-neutral-300)',
-            maxWidth: '440px',
-            lineHeight: '1.7',
-            margin: '0 0 var(--space-10)'
-          }}>
-            Review verified symptom narratives, AYUSH functional parameters (Agni, Nidra, Satmya), and automated safety red flags before the encounter begins.
-          </p>
-
-          <div style={{
+      <div style={{ display: 'flex', flex: 1, backgroundColor: 'var(--color-surface)' }}>
+        {/* Left side: Dignified Institutional Identity (Hidden on mobile) */}
+        <div 
+          style={{
+            flex: 1,
+            background: 'radial-gradient(circle at 15% 15%, rgba(255, 103, 31, 0.22) 0%, transparent 55%), radial-gradient(circle at 85% 85%, rgba(4, 106, 56, 0.15) 0%, transparent 50%), linear-gradient(135deg, #2A0D04 0%, #150602 55%, #05034E 100%)',
+            color: '#ffffff',
+            padding: 'var(--space-16)',
             display: 'flex',
             flexDirection: 'column',
-            gap: 'var(--space-3)',
-            paddingTop: 'var(--space-6)',
-            borderTop: '1px solid rgba(255,255,255,0.1)',
-            fontSize: 'var(--font-size-sm)',
-            color: 'var(--color-neutral-400)'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
-              <span style={{ color: 'var(--color-routine-text)' }}>✓</span>
-              <span>Deterministic Clinical Safety Alert Gating</span>
+            justifyContent: 'space-between',
+            borderRight: '1px solid rgba(255, 103, 31, 0.2)',
+            position: 'relative',
+            overflow: 'hidden'
+          }}
+          className="hidden-mobile"
+        >
+          <div>
+            {/* Emblem & Department */}
+            <div style={{ marginBottom: 'var(--space-16)' }}>
+              <Logo size={42} showText={true} variant="light" subtitle="Clinical Provider Access" />
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
-              <span style={{ color: 'var(--color-routine-text)' }}>✓</span>
-              <span>Direct ABDM & Ministry of Ayush NAMASTE Mapping</span>
+
+            <h1 style={{
+              fontFamily: 'var(--font-display)',
+              fontSize: 'clamp(2rem, 3.5vw, 2.75rem)',
+              fontWeight: '700',
+              lineHeight: '1.25',
+              letterSpacing: '-0.02em',
+              marginBottom: 'var(--space-6)',
+              maxWidth: '460px',
+              color: '#ffffff'
+            }}>
+              Structured clinical intelligence before you open the door.
+            </h1>
+
+            <p style={{
+              fontSize: 'var(--font-size-base)',
+              color: 'rgba(255, 255, 255, 0.82)',
+              maxWidth: '440px',
+              lineHeight: '1.7',
+              margin: '0 0 var(--space-10)'
+            }}>
+              Review verified symptom narratives, AYUSH functional parameters (Agni, Nidra, Satmya), and automated safety red flags before the encounter begins.
+            </p>
+
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 'var(--space-3)',
+              paddingTop: 'var(--space-6)',
+              borderTop: '1px solid rgba(255,255,255,0.12)',
+              fontSize: 'var(--font-size-sm)',
+              color: 'rgba(255, 255, 255, 0.75)'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
+                <span style={{ color: '#FF9E5C', fontWeight: 700 }}>✓</span>
+                <span>Deterministic Clinical Safety Alert Gating</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
+                <span style={{ color: '#FF9E5C', fontWeight: 700 }}>✓</span>
+                <span>Direct ABDM & Ministry of Ayush NAMASTE Mapping</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
+                <span style={{ color: '#FF9E5C', fontWeight: 700 }}>✓</span>
+                <span>Physician-Verified Status Elevation</span>
+              </div>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
-              <span style={{ color: 'var(--color-routine-text)' }}>✓</span>
-              <span>Physician-Verified Status Elevation</span>
-            </div>
+          </div>
+
+          <div style={{ fontSize: 'var(--font-size-xs)', color: 'rgba(255, 255, 255, 0.5)' }}>
+            National Digital Health Mission • ABDM Sandbox Certified • Ayush Hospital Network
           </div>
         </div>
 
-        <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-neutral-500)' }}>
-          Session Security: Cryptographic Token Isolation • Section 68 Compliant
-        </div>
-      </div>
-
-      {/* Right side: Clean, Open Login Area */}
-      <div style={{
-        flex: 1,
-        display: 'flex',
-        flexDirection: 'column',
-        padding: 'var(--space-8)',
-        position: 'relative',
-        backgroundColor: 'var(--color-background)'
-      }}>
+        {/* Right side: Clean, Open Login Area */}
+        <div style={{
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          padding: 'var(--space-8)',
+          position: 'relative',
+          backgroundColor: 'var(--color-background)',
+          backgroundImage: 'var(--gradient-flag-diagonal)'
+        }}>
         {/* Back to Site Button */}
         <div style={{ marginBottom: 'var(--space-8)' }}>
           <Button 
@@ -257,5 +263,6 @@ export function DoctorLoginPage() {
         </div>
       </div>
     </div>
-  );
+  </div>
+);
 }

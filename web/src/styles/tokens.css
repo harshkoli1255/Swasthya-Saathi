@@ -1,168 +1,162 @@
 /*
- * SwasthyaSaathi Design System — Human-Designed Clinical & Botanical Harmony
- * Characterized by calm restraint, high legibility, warm stone neutrals, and deep botanical spruce.
+ * SwasthyaSaathi Design System — Indian Healthcare & AYUSH Digital Mission
+ * Distinctive Indian aesthetic: Radiant Kesari / Saffron, Pure White, Ashoka Navy Blue,
+ * with subtle India Green accents and diagonal Tiranga atmospheric gradients.
  */
 
 :root {
-  /* ── Brand Primary: Deep Botanical Spruce ─────────────────────────── */
-  /* Reflects authentic AYUSH herbal roots combined with clinical dignity */
-  --color-primary-950: #0d2118;
-  --color-primary-900: #143023;
-  --color-primary-850: #183b2b; /* Primary clinical authority tone */
-  --color-primary-800: #1f4935;
-  --color-primary-700: #295e45;
-  --color-primary-600: #357657;
-  --color-primary-500: #44916c;
-  --color-primary-400: #68ad8a;
-  --color-primary-300: #97ccaf;
-  --color-primary-200: #c5e4d3;
-  --color-primary-100: #e5f2ea;
-  --color-primary-50:  #f2f8f5;
+  /* ── 1. Brand Primary: Indian Saffron / Kesari (Dominant Identity) ── */
+  --color-primary-950: #3a1306;
+  --color-primary-900: #5c1d07;
+  --color-primary-850: #7c2d12;
+  --color-primary-800: #9a3412;
+  --color-primary-750: #c2410c; /* Authority button & header tone */
+  --color-primary-700: #d9480f;
+  --color-primary-600: #ea580c;
+  --color-primary-500: #f97316;
+  --color-primary-450: #ff671f; /* Official Indian Saffron */
+  --color-primary-400: #fb923c;
+  --color-primary-300: #fdba74;
+  --color-primary-200: #fed7aa;
+  --color-primary-100: #ffedd5;
+  --color-primary-50:  #fff7ed;
+  --color-primary-25:  #fffaf5;
 
-  /* ── Accent: Warm Clay / Terracotta (Medicinal Earth) ─────────────────── */
-  /* Grounded, warm, organic accent used for thoughtful emphasis */
-  --color-accent-900: #5c2c16;
-  --color-accent-800: #7a3b1e;
-  --color-accent-700: #9b4e2b; /* Terracotta accent */
-  --color-accent-600: #b55e37;
-  --color-accent-500: #cf7349;
-  --color-accent-400: #e2936f;
-  --color-accent-200: #f5cbba;
-  --color-accent-100: #faeae3;
-  --color-accent-50:  #fdf7f4;
-
-  /* ── Neutral Paper & Stone Scale ─────────────────────────────────────── */
-  /* Replaces cold sterile grays with calming warm stone and linen neutrals */
-  --color-neutral-950: #141615;
-  --color-neutral-900: #1b1e1c;
-  --color-neutral-800: #2b302c;
-  --color-neutral-700: #3e443f;
-  --color-neutral-600: #555c56;
-  --color-neutral-500: #717872;
-  --color-neutral-400: #939a94;
-  --color-neutral-300: #bdc2bd;
-  --color-neutral-200: #dedbd4;
-  --color-neutral-150: #e7e4dc;
-  --color-neutral-100: #f1eee7;
-  --color-neutral-50:  #faf8f4;
-
-  /* ── Canvas & Surfaces ───────────────────────────────────────────────── */
-  --color-background:       #faf8f4; /* Calm uncoated paper tone */
-  --color-background-alt:   #f3efe7;
-  --color-surface:          #ffffff;
-  --color-surface-hover:    #f5f3ed;
-  --color-surface-muted:    #f0ede5;
-  --color-surface-subtle:   #f8f6f1;
-
-  /* ── Text ────────────────────────────────────────────────────────────── */
-  --color-text-primary:     #1b1e1c; /* High contrast, warm ink */
-  --color-text-secondary:   #494f4b; /* Subtle readable graphite */
-  --color-text-muted:       #747b75; /* Quiet metadata */
-  --color-text-inverse:     #ffffff;
+  /* ── 2. Official National Tiranga Tokens ───────────────────────────── */
+  --color-tiranga-saffron:        #FF671F;
+  --color-tiranga-saffron-deep:   #E65100;
+  --color-tiranga-saffron-glow:   rgba(255, 103, 31, 0.16);
+  --color-tiranga-saffron-subtle: #FFF5EE;
+  --color-tiranga-white:          #FFFFFF;
   
-  --color-text-link:        #183b2b;
-  --color-text-link-hover:  #0d2118;
+  /* Green is used selectively and minimally as requested */
+  --color-tiranga-green:          #046A38;
+  --color-tiranga-green-hover:    #03522b;
+  --color-tiranga-green-light:    #F0FDF4;
+  --color-tiranga-green-border:   #BBF7D0;
+  
+  /* Ashoka Chakra Institutional Navy */
+  --color-chakra-blue:            #06038D;
+  --color-chakra-blue-hover:      #040263;
+  --color-chakra-blue-light:      #EFF2FF;
+  --color-chakra-blue-border:     #C7D2FE;
 
-  /* ── Borders & Separators ────────────────────────────────────────────── */
-  --color-border:           #e5e2da; /* Clean hair-line border */
-  --color-border-subtle:    #f0ece4;
-  --color-border-strong:    #c9c5bb;
-  --color-border-focus:     #183b2b;
+  /* ── 3. Diagonal Flag Gradients (Tiranga Atmospheric Aesthetics) ─── */
+  --gradient-flag-diagonal:       linear-gradient(135deg, rgba(255, 103, 31, 0.09) 0%, rgba(255, 255, 255, 0.98) 42%, rgba(255, 255, 255, 0.98) 58%, rgba(4, 106, 56, 0.05) 100%);
+  --gradient-flag-hero:           linear-gradient(135deg, rgba(255, 103, 31, 0.13) 0%, #FFFFFF 44%, #FFFFFF 56%, rgba(4, 106, 56, 0.06) 100%);
+  --gradient-flag-card:           linear-gradient(135deg, rgba(255, 103, 31, 0.05) 0%, #FFFFFF 50%, rgba(4, 106, 56, 0.035) 100%);
+  --gradient-flag-banner:         linear-gradient(135deg, #FF671F 0%, #E65100 48%, #B43800 100%);
+  --gradient-flag-ribbon:         linear-gradient(90deg, #FF671F 0%, #FF671F 33.3%, #FFFFFF 33.3%, #FFFFFF 66.6%, #046A38 66.6%, #046A38 100%);
+  --gradient-flag-border:         linear-gradient(135deg, #FF671F 0%, #FFFFFF 50%, #046A38 100%);
 
-  /* ── Clinical Triage & Alerts ───────────────────────────────────────── */
-  --color-emergency:        #991b1b;
-  --color-emergency-hover:  #7f1d1d;
-  --color-emergency-bg:     #fef2f2;
-  --color-emergency-border: #fca5a5;
-  --color-emergency-text:   #7f1d1d;
+  /* ── 4. Warm Canvas & Surfaces ─────────────────────────────────────── */
+  --color-background:             #fffdfa; /* Warm white canvas */
+  --color-background-alt:         #faf6ef;
+  --color-surface:                #ffffff;
+  --color-surface-hover:          #fffbf6;
+  --color-surface-muted:          #f7f2ea;
+  --color-surface-subtle:         #fff9f2;
 
-  --color-urgent:           #92400e;
-  --color-urgent-hover:     #78350f;
-  --color-urgent-bg:        #fffbeb;
-  --color-urgent-border:    #fde68a;
-  --color-urgent-text:      #78350f;
+  /* ── 5. Typography Scale & Inks ───────────────────────────────────── */
+  --color-text-primary:           #1a1917; /* High-contrast warm charcoal */
+  --color-text-secondary:         #4a4845; /* Refined graphite */
+  --color-text-muted:             #76736e; /* Quiet clinical metadata */
+  --color-text-inverse:           #ffffff;
+  
+  --color-text-link:              #c2410c;
+  --color-text-link-hover:        #9a3412;
 
-  --color-routine:          #166534;
-  --color-routine-hover:    #14532d;
-  --color-routine-bg:       #f0fdf4;
-  --color-routine-border:   #bbf7d0;
-  --color-routine-text:     #14532d;
+  /* ── 6. Borders & Separators ──────────────────────────────────────── */
+  --color-border:                 #ede7dd;
+  --color-border-subtle:          #f5f0e6;
+  --color-border-strong:          #d6cdbe;
+  --color-border-focus:           #ea580c;
 
-  --color-info:             #1e40af;
-  --color-info-hover:       #1e3a8a;
-  --color-info-bg:          #eff6ff;
-  --color-info-border:      #bfdbfe;
-  --color-info-text:        #1e3a8a;
+  /* ── 7. Clinical Triage & Alerts ──────────────────────────────────── */
+  --color-emergency:              #991b1b;
+  --color-emergency-hover:        #7f1d1d;
+  --color-emergency-bg:           #fef2f2;
+  --color-emergency-border:       #fca5a5;
+  --color-emergency-text:         #7f1d1d;
 
-  /* ── Typography Stack ────────────────────────────────────────────────── */
+  --color-urgent:                 #c2410c;
+  --color-urgent-hover:           #9a3412;
+  --color-urgent-bg:              #fff7ed;
+  --color-urgent-border:          #fed7aa;
+  --color-urgent-text:            #9a3412;
+
+  --color-routine:                #046a38;
+  --color-routine-hover:          #03522b;
+  --color-routine-bg:             #f0fdf4;
+  --color-routine-border:         #bbf7d0;
+  --color-routine-text:           #046a38;
+
+  --color-info:                   #06038d;
+  --color-info-hover:             #040263;
+  --color-info-bg:                #eff2ff;
+  --color-info-border:            #c7d2fe;
+  --color-info-text:              #06038d;
+
+  /* ── 8. Typography Stack ──────────────────────────────────────────── */
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-display: 'Plus Jakarta Sans', var(--font-sans);
   --font-serif: 'Newsreader', Georgia, Cambria, serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
-  /* Humanized Typographic Scale (Controlled, purposeful heights) */
-  --font-size-2xs:  0.6875rem; /* 11px */
-  --font-size-xs:   0.75rem;   /* 12px */
-  --font-size-sm:   0.875rem;  /* 14px */
-  --font-size-base: 1rem;      /* 16px */
-  --font-size-lg:   1.125rem;  /* 18px */
-  --font-size-xl:   1.25rem;   /* 20px */
-  --font-size-2xl:  1.5rem;    /* 24px */
-  --font-size-3xl:  1.875rem;  /* 30px */
-  --font-size-4xl:  2.25rem;   /* 36px */
-  --font-size-5xl:  2.75rem;   /* 44px - Controlled hero size */
+  --font-size-xs:   0.75rem;    /* 12px */
+  --font-size-sm:   0.875rem;   /* 14px */
+  --font-size-base: 1rem;       /* 16px */
+  --font-size-lg:   1.125rem;   /* 18px */
+  --font-size-xl:   1.25rem;    /* 20px */
+  --font-size-2xl:  1.5rem;     /* 24px */
+  --font-size-3xl:  1.875rem;   /* 30px */
+  --font-size-4xl:  2.25rem;    /* 36px */
+  --font-size-5xl:  3rem;       /* 48px */
 
-  --font-weight-regular: 400;
-  --font-weight-medium:  500;
-  --font-weight-semibold: 600;
-  --font-weight-bold:    700;
-  --font-weight-extrabold: 800;
+  --font-weight-regular:   400;
+  --font-weight-medium:    500;
+  --font-weight-semibold:  600;
+  --font-weight-bold:      700;
 
-  --line-height-none:    1;
   --line-height-tight:   1.2;
   --line-height-snug:    1.35;
-  --line-height-normal:  1.55;
-  --line-height-relaxed: 1.68;
+  --line-height-normal:  1.5;
+  --line-height-relaxed: 1.625;
 
-  /* ── Spacing (4px base grid) ─────────────────────────────────────────── */
-  --space-0:   0;
-  --space-1:   0.25rem;   /* 4px */
-  --space-2:   0.5rem;    /* 8px */
-  --space-3:   0.75rem;   /* 12px */
-  --space-4:   1rem;      /* 16px */
-  --space-5:   1.25rem;   /* 20px */
-  --space-6:   1.5rem;    /* 24px */
-  --space-8:   2rem;      /* 32px */
-  --space-10:  2.5rem;    /* 40px */
-  --space-12:  3rem;      /* 48px */
-  --space-16:  4rem;      /* 64px */
-  --space-20:  5rem;      /* 80px */
-  --space-24:  6rem;      /* 96px */
+  /* ── 9. Spacing Scale ─────────────────────────────────────────────── */
+  --space-0:   0px;
+  --space-1:   0.25rem;  /* 4px */
+  --space-2:   0.5rem;   /* 8px */
+  --space-3:   0.75rem;  /* 12px */
+  --space-4:   1rem;     /* 16px */
+  --space-5:   1.25rem;  /* 20px */
+  --space-6:   1.5rem;   /* 24px */
+  --space-8:   2rem;     /* 32px */
+  --space-10:  2.5rem;   /* 40px */
+  --space-12:  3rem;     /* 48px */
+  --space-16:  4rem;     /* 64px */
+  --space-20:  5rem;     /* 80px */
+  --space-24:  6rem;     /* 96px */
 
-  /* ── Border Radius (Moderate, purposeful) ────────────────────────────── */
-  --radius-xs:   2px;
+  /* ── 10. Border Radius & Shadows ──────────────────────────────────── */
   --radius-sm:   4px;
-  --radius-md:   6px;
-  --radius-lg:   8px;
-  --radius-xl:   12px;
+  --radius-md:   8px;
+  --radius-lg:   12px;
+  --radius-xl:   16px;
+  --radius-2xl:  24px;
   --radius-full: 9999px;
 
-  /* ── Shadows (Restrained, subtle real-world depth) ─────────────────────── */
-  --shadow-subtle: 0 1px 2px rgba(27, 30, 28, 0.04);
-  --shadow-sm:     0 1px 3px rgba(27, 30, 28, 0.05), 0 1px 2px rgba(27, 30, 28, 0.03);
-  --shadow-md:     0 4px 8px -2px rgba(27, 30, 28, 0.06), 0 2px 4px -2px rgba(27, 30, 28, 0.04);
-  --shadow-lg:     0 12px 24px -6px rgba(27, 30, 28, 0.08), 0 4px 8px -4px rgba(27, 30, 28, 0.03);
-  --shadow-focus:  0 0 0 2px #ffffff, 0 0 0 4px #183b2b;
+  --shadow-subtle:  0 1px 3px rgba(58, 19, 6, 0.05), 0 1px 2px rgba(58, 19, 6, 0.03);
+  --shadow-card:    0 4px 12px rgba(58, 19, 6, 0.06), 0 1px 3px rgba(58, 19, 6, 0.04);
+  --shadow-hover:   0 8px 24px rgba(58, 19, 6, 0.09), 0 2px 6px rgba(58, 19, 6, 0.04);
+  --shadow-modal:   0 16px 40px rgba(58, 19, 6, 0.14), 0 4px 12px rgba(58, 19, 6, 0.08);
+  --shadow-saffron: 0 4px 16px rgba(255, 103, 31, 0.28);
 
-  /* ── Transitions ─────────────────────────────────────────────────────── */
-  --transition-fast: 140ms ease;
-  --transition-base: 220ms cubic-bezier(0.16, 1, 0.3, 1);
-  --transition-smooth: 320ms cubic-bezier(0.16, 1, 0.3, 1);
-  
-  /* ── Layout Dimensions ───────────────────────────────────────────────── */
-  --max-width-content:  1180px;
-  --max-width-narrow:   780px;
-  --max-width-intake:   580px; /* Focused, calm patient reading width */
-  --sidebar-width:      260px;
-  --navbar-height:      60px;
+  /* Transitions */
+  --transition-fast:   150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow:   350ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Layout Standards */
+  --navbar-height: 68px;
+  --max-width-content: 1380px;
 }

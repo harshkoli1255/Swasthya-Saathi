@@ -8,25 +8,33 @@ export function PublicLayout() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: 'var(--color-background)' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--gradient-flag-diagonal)' }}>
+      {/* ── TOP NATIONAL TRICOLOR RIBBON ── */}
+      <div className="tiranga-ribbon" />
+
       {/* ── TOP ANNOUNCEMENT / CONTEXT STRIP ── */}
       <div style={{
-        background: 'var(--color-primary-950)',
-        color: 'var(--color-neutral-100)',
+        background: '#2A0D04',
+        color: '#FFF7ED',
         padding: 'var(--space-2) var(--space-4)',
         fontSize: 'var(--font-size-xs)',
         textAlign: 'center',
-        borderBottom: '1px solid rgba(255,255,255,0.08)',
-        letterSpacing: '0.02em'
+        borderBottom: '1px solid rgba(255, 103, 31, 0.25)',
+        letterSpacing: '0.02em',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 'var(--space-2)'
       }}>
-        <span>Operational Standard: <strong>AI Assists. Attending Physician Decides.</strong> Full ABDM & Ministry of Ayush NAMASTE alignment.</span>
+        <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--color-tiranga-saffron)' }}></span>
+        <span>Operational Standard: <strong>AI Assists. Attending Physician Decides.</strong> National Digital Health (ABDM) & Ministry of Ayush NAMASTE aligned.</span>
       </div>
 
       {/* ── MAIN NAVIGATION BAR ── */}
       <header style={{
-        background: 'rgba(250, 248, 244, 0.95)',
-        backdropFilter: 'blur(8px)',
-        WebkitBackdropFilter: 'blur(8px)',
+        background: 'rgba(255, 253, 250, 0.95)',
+        backdropFilter: 'blur(10px)',
+        WebkitBackdropFilter: 'blur(10px)',
         borderBottom: '1px solid var(--color-border)',
         height: 'var(--navbar-height)',
         display: 'flex',
@@ -53,7 +61,7 @@ export function PublicLayout() {
                 textDecoration: 'none',
                 transition: 'color var(--transition-fast)'
               }}
-              onMouseEnter={e => e.currentTarget.style.color = 'var(--color-primary-850)'}
+              onMouseEnter={e => e.currentTarget.style.color = 'var(--color-primary-750)'}
               onMouseLeave={e => e.currentTarget.style.color = 'var(--color-text-secondary)'}
             >
               Platform Overview
@@ -68,7 +76,7 @@ export function PublicLayout() {
                 textDecoration: 'none',
                 transition: 'color var(--transition-fast)'
               }}
-              onMouseEnter={e => e.currentTarget.style.color = 'var(--color-primary-850)'}
+              onMouseEnter={e => e.currentTarget.style.color = 'var(--color-primary-750)'}
               onMouseLeave={e => e.currentTarget.style.color = 'var(--color-text-secondary)'}
             >
               Clinical Philosophy & Ethics
@@ -79,7 +87,7 @@ export function PublicLayout() {
             <Link 
               to="/doctor/login" 
               style={{
-                background: 'var(--color-primary-850)',
+                background: 'linear-gradient(135deg, #FF792E 0%, #E65100 100%)',
                 color: '#ffffff',
                 padding: 'var(--space-2) var(--space-4)',
                 borderRadius: 'var(--radius-md)',
@@ -89,11 +97,18 @@ export function PublicLayout() {
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: 'var(--space-2)',
-                boxShadow: 'var(--shadow-subtle)',
-                transition: 'background-color var(--transition-fast)'
+                boxShadow: '0 2px 8px rgba(230, 81, 0, 0.28)',
+                border: '1px solid #C2410C',
+                transition: 'all var(--transition-fast)'
               }}
-              onMouseEnter={e => e.currentTarget.style.backgroundColor = 'var(--color-primary-900)'}
-              onMouseLeave={e => e.currentTarget.style.backgroundColor = 'var(--color-primary-850)'}
+              onMouseEnter={e => {
+                e.currentTarget.style.boxShadow = '0 4px 14px rgba(230, 81, 0, 0.4)';
+                e.currentTarget.style.transform = 'translateY(-1px)';
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.boxShadow = '0 2px 8px rgba(230, 81, 0, 0.28)';
+                e.currentTarget.style.transform = 'translateY(0)';
+              }}
             >
               Physician Workstation
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

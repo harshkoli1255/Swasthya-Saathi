@@ -126,8 +126,8 @@ export function QueuePage() {
       }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', marginBottom: 'var(--space-2)' }}>
-            <span className="editorial-eyebrow" style={{ color: 'var(--color-clay-600)' }}>
-              Outpatient Triage Desk
+            <span className="editorial-eyebrow" style={{ color: 'var(--color-primary-700)' }}>
+              Ayush Outpatient Triage Desk
             </span>
             <span style={{ color: 'var(--color-border)' }}>•</span>
             <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)', fontWeight: 500 }}>
@@ -591,7 +591,7 @@ export function QueuePage() {
                       width: '4px',
                       height: '38px',
                       borderRadius: '2px',
-                      backgroundColor: isEmergency ? '#DC2626' : isUrgent ? '#D97706' : 'var(--color-primary-700)',
+                      backgroundColor: isEmergency ? '#DC2626' : isUrgent ? '#D97706' : 'var(--color-primary-600)',
                       flexShrink: 0
                     }} />
 
@@ -601,9 +601,9 @@ export function QueuePage() {
                         width: '38px',
                         height: '38px',
                         borderRadius: '50%',
-                        backgroundColor: isEmergency ? '#FEE2E2' : isUrgent ? '#FEF3C7' : 'var(--color-surface-muted)',
+                        backgroundColor: isEmergency ? '#FEE2E2' : isUrgent ? '#FEF3C7' : 'var(--color-primary-50)',
                         color: isEmergency ? '#DC2626' : isUrgent ? '#B45309' : 'var(--color-primary-800)',
-                        border: `1px solid ${isEmergency ? '#FECACA' : isUrgent ? '#FDE68A' : 'var(--color-border)'}`,
+                        border: `1px solid ${isEmergency ? '#FECACA' : isUrgent ? '#FDE68A' : 'var(--color-primary-200)'}`,
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',

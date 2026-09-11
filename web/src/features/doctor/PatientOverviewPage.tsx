@@ -91,18 +91,35 @@ export function PatientOverviewPage() {
         </div>
 
         {/* Patient Identity Banner */}
-        <Card style={{ backgroundColor: 'var(--color-primary-900)', color: 'var(--color-text-inverse)', borderColor: 'var(--color-primary-900)' }}>
+        <Card style={{
+          background: 'linear-gradient(135deg, #2A0D04 0%, #170702 55%, #05034E 100%)',
+          color: '#ffffff',
+          borderColor: 'rgba(255, 103, 31, 0.25)',
+          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)'
+        }}>
           <CardContent style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: 'var(--space-6)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-6)' }}>
-              <div style={{ width: '64px', height: '64px', borderRadius: 'var(--radius-full)', backgroundColor: 'var(--color-primary-800)', color: 'var(--color-primary-200)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 'var(--font-size-2xl)', fontWeight: 'var(--font-weight-bold)' }}>
+              <div style={{
+                width: '64px',
+                height: '64px',
+                borderRadius: 'var(--radius-full)',
+                background: 'var(--gradient-primary)',
+                color: '#ffffff',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: 'var(--font-size-2xl)',
+                fontWeight: 'var(--font-weight-bold)',
+                boxShadow: '0 4px 12px rgba(230, 81, 0, 0.35)'
+              }}>
                 {encounter.patient.full_name.charAt(0)}
               </div>
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-4)', marginBottom: 'var(--space-1)' }}>
-                  <h1 className="text-2xl font-bold" style={{ color: 'var(--color-text-inverse)' }}>{encounter.patient.full_name}</h1>
+                  <h1 className="text-2xl font-bold" style={{ color: '#ffffff' }}>{encounter.patient.full_name}</h1>
                   <Badge variant={encounter.triage_level.toLowerCase() as any}>{encounter.triage_level}</Badge>
                 </div>
-                <div style={{ display: 'flex', gap: 'var(--space-4)', fontSize: 'var(--font-size-sm)', color: 'var(--color-primary-300)' }}>
+                <div style={{ display: 'flex', gap: 'var(--space-4)', fontSize: 'var(--font-size-sm)', color: 'rgba(255, 255, 255, 0.75)' }}>
                   <span>{encounter.patient.age}y • {encounter.patient.sex}</span>
                   <span style={{ opacity: 0.5 }}>|</span>
                   <span style={{ fontFamily: 'var(--font-mono)' }}>{encounter.opd_id}</span>
@@ -111,10 +128,10 @@ export function PatientOverviewPage() {
             </div>
 
             {/* Status */}
-            <div style={{ display: 'flex', gap: 'var(--space-6)', padding: 'var(--space-3) var(--space-6)', backgroundColor: 'var(--color-primary-800)', borderRadius: 'var(--radius-lg)' }}>
+            <div style={{ display: 'flex', gap: 'var(--space-6)', padding: 'var(--space-3) var(--space-6)', backgroundColor: 'rgba(255, 255, 255, 0.08)', borderRadius: 'var(--radius-lg)', border: '1px solid rgba(255, 103, 31, 0.2)' }}>
               <div>
-                <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-primary-400)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Status</div>
-                <div style={{ fontWeight: 'var(--font-weight-medium)', color: 'var(--color-primary-50)' }}>{encounter.status.replace(/_/g, ' ')}</div>
+                <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-primary-300)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Status</div>
+                <div style={{ fontWeight: 'var(--font-weight-medium)', color: '#ffffff' }}>{encounter.status.replace(/_/g, ' ')}</div>
               </div>
             </div>
           </CardContent>
@@ -154,7 +171,7 @@ export function PatientOverviewPage() {
 
           {/* Center Column - AI Summary & Clinical Facts */}
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 'var(--space-6)' }}>
-            <Card style={{ borderTop: '4px solid var(--color-accent-700)' }}>
+            <Card style={{ borderTop: '4px solid var(--color-primary-600)' }}>
               <CardHeader style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                 <CardTitle className="text-xl">Pre-consultation Summary</CardTitle>
                 <Badge variant="outline">AI Extracted</Badge>

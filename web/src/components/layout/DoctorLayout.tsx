@@ -14,7 +14,10 @@ export function DoctorLayout() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: 'var(--color-background)' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: 'var(--color-background)', backgroundImage: 'var(--gradient-flag-diagonal)' }}>
+      {/* National Tricolor Micro-Ribbon */}
+      <div className="tiranga-ribbon" />
+
       <style>{`
         .doctor-nav-link {
           display: inline-flex;
@@ -30,15 +33,15 @@ export function DoctorLayout() {
           border: 1px solid transparent;
         }
         .doctor-nav-link:hover {
-          color: var(--color-primary-900);
-          background-color: var(--color-surface-hover);
+          color: var(--color-primary-700);
+          background-color: var(--color-primary-25);
         }
         .doctor-nav-link.active {
-          color: var(--color-primary-900);
+          color: var(--color-primary-800);
           background-color: var(--color-primary-50);
           border-color: var(--color-primary-200);
           font-weight: 600;
-          box-shadow: 0 1px 2px rgba(13, 34, 24, 0.04);
+          box-shadow: 0 1px 3px rgba(230, 81, 0, 0.08);
         }
         @media (max-width: 900px) {
           .doctor-nav-links-desktop {
@@ -69,7 +72,7 @@ export function DoctorLayout() {
         justifyContent: 'space-between',
         alignItems: 'center',
         letterSpacing: '0.02em',
-        borderBottom: '1px solid rgba(255, 255, 255, 0.08)'
+        borderBottom: '1px solid rgba(255, 103, 31, 0.15)'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
@@ -208,13 +211,14 @@ export function DoctorLayout() {
                 width: '28px',
                 height: '28px',
                 borderRadius: '50%',
-                backgroundColor: 'var(--color-primary-800)',
+                background: 'var(--gradient-primary)',
                 color: '#FFFFFF',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 fontSize: '12px',
-                fontWeight: 'var(--font-weight-bold)'
+                fontWeight: 'var(--font-weight-bold)',
+                boxShadow: '0 2px 5px rgba(230, 81, 0, 0.25)'
               }}>
                 {user?.full_name?.charAt(0) || 'D'}
               </div>

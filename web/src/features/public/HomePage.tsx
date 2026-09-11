@@ -32,15 +32,18 @@ export function HomePage() {
       <section style={{
         paddingTop: 'var(--space-16)',
         paddingBottom: 'var(--space-20)',
-        borderBottom: '1px solid var(--color-border)'
+        borderBottom: '1px solid var(--color-border)',
+        backgroundImage: 'var(--gradient-flag-diagonal)',
+        position: 'relative',
+        overflow: 'hidden'
       }}>
         <div className="container" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 'var(--space-12)', alignItems: 'center' }}>
           
           {/* Left Column: Clear Clinical Introduction */}
           <div>
             <div className="editorial-eyebrow" style={{ marginBottom: 'var(--space-4)' }}>
-              <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: 'var(--color-primary-600)' }}></span>
-              Clinical Pre-Consultation Intelligence
+              <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--color-primary-600)', boxShadow: '0 0 6px rgba(255, 103, 31, 0.4)' }}></span>
+              Ayush Digital Health Mission • Pre-Consultation Intelligence
             </div>
 
             <h1 style={{
@@ -364,13 +367,14 @@ export function HomePage() {
                     alignItems: 'center',
                     gap: 'var(--space-3)',
                     padding: 'var(--space-3) var(--space-5)',
-                    background: isActive ? 'var(--color-primary-850)' : 'transparent',
+                    background: isActive ? 'var(--gradient-primary)' : 'transparent',
                     color: isActive ? '#ffffff' : 'var(--color-text-secondary)',
-                    border: `1px solid ${isActive ? 'var(--color-primary-950)' : 'var(--color-border)'}`,
+                    border: `1px solid ${isActive ? 'var(--color-primary-600)' : 'var(--color-border)'}`,
                     borderRadius: 'var(--radius-md)',
                     cursor: 'pointer',
                     fontSize: 'var(--font-size-sm)',
                     fontWeight: isActive ? 'var(--font-weight-semibold)' : 'var(--font-weight-medium)',
+                    boxShadow: isActive ? '0 2px 8px rgba(230, 81, 0, 0.25)' : 'none',
                     transition: 'all var(--transition-fast)'
                   }}
                 >
@@ -665,7 +669,7 @@ export function HomePage() {
       </section>
 
       {/* ── 5. FINAL INVITATION & CREDENTIALS ── */}
-      <section style={{ paddingBlock: 'var(--space-20)', backgroundColor: 'var(--color-surface-subtle)' }}>
+      <section style={{ paddingBlock: 'var(--space-20)', backgroundColor: 'var(--color-surface)', backgroundImage: 'var(--gradient-flag-diagonal)', borderTop: '1px solid var(--color-border)' }}>
         <div className="container" style={{ maxWidth: '820px', textAlign: 'center' }}>
           
           <span className="editorial-eyebrow" style={{ marginBottom: 'var(--space-3)' }}>

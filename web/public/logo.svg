@@ -1,46 +1,110 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256" fill="none">
   <defs>
-    <linearGradient id="swasthyaBg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#194833"/>
-      <stop offset="100%" stop-color="#0E2D1E"/>
+    <!-- Saffron Diagonal Gradient -->
+    <linearGradient id="saffronGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF792E"/>
+      <stop offset="100%" stop-color="#E65100"/>
     </linearGradient>
-    <linearGradient id="swasthyaGlow" x1="50%" y1="0%" x2="50%" y2="100%">
-      <stop offset="0%" stop-color="#286B4D" stop-opacity="0.35"/>
-      <stop offset="100%" stop-color="#0E2D1E" stop-opacity="0"/>
+
+    <!-- India Green Diagonal Gradient -->
+    <linearGradient id="greenGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0B7E43"/>
+      <stop offset="100%" stop-color="#046A38"/>
     </linearGradient>
-    <filter id="subtleShadow" x="-10%" y="-10%" width="120%" height="125%" filterUnits="userSpaceOnUse">
-      <feDropShadow dx="0" dy="3" stdDeviation="3.5" flood-color="#06180F" flood-opacity="0.25"/>
+
+    <!-- Ashoka Navy Gradient -->
+    <linearGradient id="navyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0A1172"/>
+      <stop offset="100%" stop-color="#06038D"/>
+    </linearGradient>
+
+    <!-- Clip Path for Squircle -->
+    <clipPath id="squircleClip">
+      <rect x="14" y="14" width="228" height="228" rx="56" ry="56"/>
+    </clipPath>
+
+    <!-- Shadow for central seal -->
+    <filter id="sealShadow" x="-20%" y="-20%" width="140%" height="140%" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#141615" flood-opacity="0.28"/>
     </filter>
   </defs>
 
-  <!-- Base Squircle -->
-  <rect x="14" y="14" width="228" height="228" rx="58" ry="58" fill="url(#swasthyaBg)"/>
-  <rect x="14" y="14" width="228" height="228" rx="58" ry="58" fill="url(#swasthyaGlow)"/>
-  <rect x="14.5" y="14.5" width="227" height="227" rx="57.5" ry="57.5" stroke="rgba(255, 255, 255, 0.16)" stroke-width="1.5"/>
+  <!-- 1. Base Squircle with Diagonal Indian Flag Stripes -->
+  <g clip-path="url(#squircleClip)">
+    <!-- Base White Canvas -->
+    <rect x="14" y="14" width="228" height="228" fill="#FFFFFF"/>
 
-  <!-- Inner Protective Shield / Dome Canopy -->
-  <!-- Smooth arch over top, curving down to wings, with clean upward chevron at bottom -->
+    <!-- Top-Left Diagonal Band: Indian Saffron / Kesari -->
+    <polygon points="14,14 242,14 14,242" fill="url(#saffronGrad)"/>
+
+    <!-- Middle Diagonal Band: White / Ivory separator (cutting across 45 degrees) -->
+    <polygon points="14,198 198,14 242,14 242,58 58,242 14,242" fill="#FFFFFF"/>
+
+    <!-- Bottom-Right Diagonal Band: India Green -->
+    <polygon points="86,242 242,86 242,242" fill="url(#greenGrad)"/>
+
+    <!-- Fine Gold / Saffron separation pinstripe -->
+    <line x1="14" y1="198" x2="198" y2="14" stroke="rgba(255, 103, 31, 0.4)" stroke-width="2"/>
+    <line x1="86" y1="242" x2="242" y2="86" stroke="rgba(4, 106, 56, 0.4)" stroke-width="2"/>
+  </g>
+
+  <!-- Squircle Border Contour -->
+  <rect x="14.5" y="14.5" width="227" height="227" rx="55.5" ry="55.5" stroke="rgba(255, 255, 255, 0.35)" stroke-width="2"/>
+  <rect x="14" y="14" width="228" height="228" rx="56" ry="56" stroke="rgba(10, 17, 114, 0.15)" stroke-width="1.5"/>
+
+  <!-- 2. Central Indian Clinical Seal (Pristine White with Navy & Saffron Detailing) -->
+  <circle cx="128" cy="128" r="62" fill="#FFFFFF" filter="url(#sealShadow)"/>
+  <circle cx="128" cy="128" r="61" stroke="#06038D" stroke-width="2.5" stroke-dasharray="4 2"/>
+  <circle cx="128" cy="128" r="56" stroke="rgba(230, 81, 0, 0.25)" stroke-width="1.5"/>
+
+  <!-- 24-Spoke Subtle Ashoka Chakra Rays in center circle -->
+  <g stroke="#06038D" stroke-width="1" opacity="0.22">
+    <line x1="128" y1="76" x2="128" y2="180"/>
+    <line x1="76" y1="128" x2="180" y2="128"/>
+    <line x1="91.2" y1="91.2" x2="164.8" y2="164.8"/>
+    <line x1="91.2" y1="164.8" x2="164.8" y2="91.2"/>
+    <line x1="80.6" y1="110.5" x2="175.4" y2="145.5"/>
+    <line x1="80.6" y1="145.5" x2="175.4" y2="110.5"/>
+    <line x1="110.5" y1="80.6" x2="145.5" y2="175.4"/>
+    <line x1="145.5" y1="80.6" x2="110.5" y2="175.4"/>
+  </g>
+
+  <!-- 3. Protective Healing Canopy (Dome of Care) in Navy & Saffron -->
   <path
-    d="M 86 166 
-       C 75 166 69 156 71 144 
-       C 73 108 94 76 128 76 
-       C 162 76 183 108 185 144 
-       C 187 156 181 166 170 166 
-       C 162 166 156 160 152 156 
-       L 128 138 
-       L 104 156 
-       C 100 160 94 166 86 166 Z"
+    d="M 98 154
+       C 89 154 84 146 86 136
+       C 88 107 104 88 128 88
+       C 152 88 168 107 170 136
+       C 172 146 167 154 158 154
+       C 151 154 146 149 143 145
+       L 128 132
+       L 113 145
+       C 110 149 105 154 98 154 Z"
     fill="none"
-    stroke="#FFFFFF"
-    stroke-width="17"
+    stroke="url(#navyGrad)"
+    stroke-width="11"
     stroke-linecap="round"
     stroke-linejoin="round"
-    filter="url(#subtleShadow)"
   />
 
-  <!-- Centered AYUSH Medical Plus Cross -->
+  <!-- 4. Sacred AYUSH Medical Plus Cross (Saffron & White) -->
   <!-- Vertical Bar -->
-  <rect x="119.5" y="93" width="17" height="48" rx="8.5" ry="8.5" fill="#FFFFFF" filter="url(#subtleShadow)"/>
+  <rect x="122" y="99" width="12" height="36" rx="6" fill="#E65100"/>
   <!-- Horizontal Bar -->
-  <rect x="104" y="108.5" width="48" height="17" rx="8.5" ry="8.5" fill="#FFFFFF" filter="url(#subtleShadow)"/>
+  <rect x="110" y="111" width="36" height="12" rx="6" fill="#E65100"/>
+  <!-- Central White Healing Dot -->
+  <circle cx="128" cy="117" r="3.5" fill="#FFFFFF"/>
+
+  <!-- Lower AYUSH Golden Leaf Accent (Holistic Health Foundation) -->
+  <path
+    d="M 128 150 C 137 144 148 147 151 156 C 142 159 133 156 128 150 Z"
+    fill="#046A38"
+    opacity="0.9"
+  />
+  <path
+    d="M 128 150 C 119 144 108 147 105 156 C 114 159 123 156 128 150 Z"
+    fill="#E65100"
+    opacity="0.9"
+  />
+  <circle cx="128" cy="150" r="2.5" fill="#06038D"/>
 </svg>
