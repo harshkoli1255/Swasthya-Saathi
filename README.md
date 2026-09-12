@@ -11,58 +11,53 @@
 
 > **Clinical Governance Mandate:**  
 > **"AI ASSISTS. PHYSICIAN DECIDES."**  
-> SwasthyaSaathi is an assistive pre-consultation intake platform. It does not perform autonomous diagnosis, clinical triage decisions, or drug prescriptions. All captured symptoms and AI-extracted formulations are delivered to the registered AYUSH physician as structured draft findings pending direct clinical examination.
+> SwasthyaSaathi is an assistive pre-consultation intake tool. It captures symptoms, voice narratives, constitutional AYUSH markers, and paper prescriptions **before** the consultation. It does not perform autonomous diagnosis or drug prescribing; all outputs are delivered to the registered AYUSH physician as structured draft findings.
 
 ---
 
-## 📑 Table of Contents
-1. [System Overview & Architecture](#-system-overview--architecture)
-2. [Key Subsystems](#-key-subsystems)
-   - [Android Patient Mobile App (`/mobile`)](#1-android-patient-mobile-app-mobile)
-   - [FastAPI Intelligence Backend (`/backend`)](#2-fastapi-clinical-backend-backend)
-   - [Doctor Workstation Portal (`/web`)](#3-doctor-clinical-workstation-web)
-3. [Canonical 26-Screen Patient Journey](#-canonical-26-screen-patient-mobile-journey)
-4. [Quick Start (Docker — Recommended)](#-quick-start-with-docker-recommended)
-5. [Running the Android Mobile App](#-running-the-flutter-android-patient-app)
-6. [Running the Doctor Web Portal](#-running-the-doctor-web-portal)
-7. [Configuring AI Intelligence (Groq / Gemini / Ollama)](#-configuring-ai-intelligence-providers)
-8. [Testing & Quality Verification](#-testing--quality-verification)
-9. [Project Directory Layout](#-project-directory-layout)
-10. [Troubleshooting & FAQs](#-troubleshooting--faqs)
+## 🌐 Quick Access & Port Reference
+
+When running SwasthyaSaathi locally, the services are available at the following URLs:
+
+| Service | Port / URL | Description | Default Credentials |
+|---|---|---|---|
+| **Patient Web Intake Portal** | **`http://localhost:5173`** | Multilingual patient self-service intake, voice case taking, document upload, and OPD token tracking | *Public (No login required)* |
+| **Doctor Clinical Workstation** | **`http://localhost:5174`** | OPD live queue, triage priority list, AI draft review, transcript audio player, and prescription formulation | **Username:** `dr.ayush`<br>**Password:** `demo_password123` |
+| **FastAPI Backend & Swagger** | **`http://localhost:8000/docs`** | Interactive OpenAPI / Swagger documentation and health endpoints | *Bearer JWT (via Doctor Login)* |
+| **MinIO Object Storage** | **`http://localhost:9001`** | Web console for inspecting uploaded prescription scans and audio files | **User:** `swasthya_minio`<br>**Password:** `swasthya_minio_secret` |
+| **Android Patient App** | Physical Device / Emulator | Native Flutter mobile app with hardware microphone, camera OCR viewfinder, and offline sync | Connected via ADB |
 
 ---
 
-## 🏛 System Overview & Architecture
-
-SwasthyaSaathi bridges the critical communication gap in high-volume AYUSH (Ayurveda, Yoga & Naturopathy, Unani, Siddha, Homeopathy) and Integrative Medicine OPD clinics. By capturing patient history, bilingual voice narratives, and paper prescriptions **before** the patient steps into the examination cabin, it synthesizes an evidence-grounded clinical draft for the physician.
+## 🏛 System Architecture
 
 ```mermaid
 graph TD
-    subgraph Patient Touchpoints
-        Mobile[Flutter Android Patient App :8000]
-        WebPatient[Web Intake Portal :5173]
+    subgraph Patient Surfaces
+        WebPatient["🌐 Patient Web Intake<br>http://localhost:5173"]
+        Mobile["📱 Android Patient App<br>(Flutter Native)"]
     end
 
-    subgraph Backend Core [FastAPI :8000]
-        API[Intake & Encounters API]
-        ASR[Bilingual Voice Transcription Pipeline]
-        OCR[Document & Prescription Processing]
-        LLM[Multi-Provider LLM Extraction Chain]
-        TriageEngine[Deterministic Clinical Normalizer]
+    subgraph Backend Core ["FastAPI Clinical Engine :8000"]
+        API["REST & Intake API"]
+        ASR["Bilingual Voice ASR Pipeline"]
+        OCR["Prescription OCR Engine"]
+        LLM["Multi-Provider AI (Groq / Gemini / Local)"]
+        TriageEngine["Deterministic Clinical Normalizer"]
     end
 
-    subgraph Persistence & Storage
-        DB[(PostgreSQL 16 :5432)]
-        S3[(MinIO Storage :9000)]
+    subgraph Data & Storage
+        DB[("PostgreSQL 16 :5432")]
+        S3[("MinIO Object Storage :9000/:9001")]
     end
 
-    subgraph Clinical Touchpoints
-        DoctorWorkstation[Doctor Clinical Portal :5173]
-        ABDMGateway[ABDM Sandbox Gateway]
+    subgraph Clinical OPD Surface
+        DoctorWorkstation["🩺 Doctor Workstation<br>http://localhost:5174"]
+        ABDMGateway["ABDM Sandbox Gateway<br>(M1 ABHA / M2 FHIR)"]
     end
 
-    Mobile -->|REST API / TCP reverse| API
-    WebPatient -->|HTTP / JSON| API
+    WebPatient -->|HTTP REST| API
+    Mobile -->|HTTP REST / adb reverse :8000| API
     API --> DB
     API --> S3
     API --> ASR
@@ -70,275 +65,216 @@ graph TD
     API --> LLM
     LLM --> TriageEngine
     TriageEngine --> DB
-    DoctorWorkstation -->|Session Review & Prescription| API
-    API -->|ABHA M1/M2 Linkage & FHIR Export| ABDMGateway
+    DoctorWorkstation -->|JWT Session & Prescription| API
+    API -->|ABHA Linkage & FHIR Export| ABDMGateway
 ```
 
 ---
 
-## 📦 Key Subsystems
+## 🚀 Quick Start Guide
 
-### 1. Android Patient Mobile App (`/mobile`)
-- **Technology**: Built using **Flutter 3** with `flutter_riverpod` state management, `go_router` navigation, `record` audio streaming, and `dio` networking.
-- **Design System**: Strict alignment with approved **Flowstep visual designs** (`AppTheme`):
-  - Primary Saffron (`#EA580C`), Clinical Emerald (`#059669`), Dark Slate (`#090D16`), Surface (`#F8FAFC`).
-  - Standardized `20dp` card radius, `16dp` interactive controls, and `56dp` minimum touch targets.
-- **Key Modules**:
-  - **ABDM Health ID (Step 1-3)**: 14-digit ABHA input, OTP validation, verified demographic profile linking.
-  - **Voice Intake Engine**: Bilingual Hindi/English speech recording with real-time 21-bar acoustic waveform visualizer and editable transcription review.
-  - **AYUSH Prakriti Questionnaire**: Constitutional profiling across Agni (digestion), Nidra (sleep quality), and Satmya (thermal adaptation).
-  - **Prescription Scanner & OCR**: Optical viewfinder with laser detection line, extracted medication review, and multi-page carousel.
-  - **Live OPD Queue Token**: Boarding-pass styled queue status with real-time patient-ahead computation, estimated wait times, and consultation progress stepper.
-  - **System States**: Dedicated offline mode, privacy session lock (10-min inactivity), microphone permission fallbacks, and paper scanning empty states.
-
-### 2. FastAPI Clinical Backend (`/backend`)
-- **Technology**: Python 3.11+, **FastAPI**, SQLAlchemy 2.0 (Async), Alembic, Pydantic v2.
-- **Multi-Provider AI Intelligence**:
-  - Primary: High-speed **Groq Cloud** (`qwen/qwen3.6-27b`, `llama-3.1-8b-instant`).
-  - Secondary Fallback: **Google Gemini 1.5 Flash**.
-  - On-Premises Local Fallback: **Ollama** (`llama3.1:8b`).
-  - Zero-Cloud Safety Fallback: Deterministic regex and clinical dictionary extraction engine ensuring 100% uptime with zero API keys.
-- **Clinical Safety & Authorization**:
-  - Patient tenant isolation: public intake tokens cannot query doctor queues or cross-examine other encounters.
-  - ABDM Milestones 1 & 2 integration with RSA-OAEP encryption and mock sandbox adapter.
-  - Full FHIR R4 export mapper for clinical summaries.
-
-### 3. Doctor Clinical Workstation (`/web`)
-- **Technology**: React 18, TypeScript, Vite, TanStack Query, Forest Sage Clinical Design System.
-- **Features**: Real-time triage priority list (Emergency / Urgent / Routine), dual-column consultation chart, verified AI draft summary review, raw transcript audio playback, document viewer, and prescription writing.
+### 1. Prerequisites
+- **Node.js** 18+ and **npm**
+- **Python** 3.11+
+- **Docker & Docker Compose** (for PostgreSQL and MinIO)
+- *(Optional)* **Flutter SDK** 3.13+ (for Android mobile development)
 
 ---
 
-## 📱 Canonical 26-Screen Patient Mobile Journey
-
-| Screen # | State / Milestone | Description & Flowstep Alignment |
-|---|---|---|
-| **01** | **Welcome & Language Entry** | High-contrast hero, 56dp CTA buttons, hospital branding, trust strip |
-| **02** | **Language Selector Sheet** | 32dp rounded modal bottom sheet with native script language cards (`English`, `हिन्दी`, `मराठी`, `ગુજરાતી`) |
-| **03** | **ABHA ID Input (Step 1)** | 14-digit ABHA ID entry with ABDM Mock Sandbox environment indicator |
-| **04** | **ABHA OTP Verification (Step 2)** | 6-box OTP entry, 60s countdown timer, and secure verification |
-| **05** | **Verified ABHA Profile (Step 3)** | Verified demographic card, linked hospital records, and ABDM Linked badge |
-| **06** | **Patient Consent Notice** | Granular data switches (Voice, OCR, AYUSH markers) and clinical governance notice |
-| **07** | **Voice Intake (Chief Complaint)** | High-contrast symptom prompt with quick symptom selection chips |
-| **08** | **Voice Recording Listening** | 21-bar pulsating acoustic waveform, active timer, and live voice listening |
-| **09** | **Voice Processing State** | Saffron circular spinner with multi-phase intake structuring checklist |
-| **10** | **Transcript Review & Edit** | Bilingual transcription edit container with character counter |
-| **11** | **Adaptive Clinical Follow-up** | Dynamic follow-up questions (`Does burning happen immediately after meals?`) |
-| **12** | **AYUSH Prakriti Intake** | Constitutional selectors: Agni (Digestion), Nidra (Sleep), Satmya (Season) |
-| **13** | **Document Scanner Viewfinder** | Architectural camera viewfinder with laser corner brackets and shutter control |
-| **14** | **Document OCR Processing** | Animated laser sweep line and extracted medication overlay chips |
-| **15** | **Extracted Document Review** | Prescribing clinic card, identified AYUSH medicines, and doctor cross-exam notice |
-| **16** | **Clinical Case Review Summary** | Pre-consultation summary card with physician examination disclosure |
-| **17** | **OPD Token & Live Queue** | Dark boarding pass card (`OPD • A42`), queue position, wait time, doctor card, and consultation progress stepper |
-| **18** | **Network Offline State** | Amber banner, cached local token, hospital Wi-Fi reconnect CTA |
-| **19** | **Session Inactivity / Lock State** | Privacy lock modal triggering after 10 minutes of inactivity |
-| **20** | **Microphone Permission Denied** | Android permission instructions and seamless switch to text typing mode |
-| **21** | **Document Processing Failure** | Error banner, blurry scan tips, and retry capture action |
-| **22** | **Camera Unavailable State** | Camera hardware failure fallback to gallery photo picker |
-| **23** | **Multi-page Document Carousel** | Multi-document carousel (`P1: Prescription`, `P2: Lab Report`) with add page CTA |
-| **24** | **Empty Health Records State** | First-visit guidance and paper prescription scanner CTA |
-| **25** | **Exit Confirmation Sheet** | Pause symptom intake sheet with draft preservation |
-| **26** | **Dispensary Token Reference** | Post-consultation pharmacy token (`PHARMACY • P18`), stock status, and medicine checklist |
-
----
-
-## 🚀 Quick Start with Docker (Recommended)
-
-### Step 1: Clone the Repository
+### 2. Clone & Configure Environment
 ```bash
 git clone https://github.com/harshkoli1255/Swasthya-Saathi.git
 cd Swasthya-Saathi
-```
 
-### Step 2: Environment Setup
-```bash
+# Create environment configuration files
 cp .env.example .env
 cp backend/.env.example backend/.env
 ```
 
-### Step 3: Launch PostgreSQL & MinIO
+---
+
+### 3. Start Infrastructure (PostgreSQL & MinIO)
 ```bash
 docker compose up -d db minio
-# Or: make up
 ```
 
-### Step 4: Run Migrations & Seed Data
+---
+
+### 4. Setup & Start Backend (Port 8000)
 ```bash
 cd backend
-# With your python environment active:
+
+# Create & activate python virtual environment
+python3 -m venv venv
+source venv/bin/activate
+
+# Install dependencies
+pip install -e ".[dev]"
+
+# Run database migrations
 alembic upgrade head
-python scripts/seed.py             # Creates default doctor: dr.ayush / demo_password123
-python scripts/seed_questions.py   # Seeds AYUSH & general intake question bank
-python scripts/seed_encounters.py  # Seeds sample patient OPD queue
-cd ..
-```
 
-### Step 5: Start FastAPI Backend
-```bash
-cd backend
+# Seed default doctors and demo OPD queue
+python scripts/seed.py             # Creates dr.ayush, dr.sharma, admin
+python scripts/seed_questions.py   # Seeds intake questionnaire bank
+python scripts/seed_encounters.py  # Generates synthetic queue & patient intake tokens
+
+# Start FastAPI server
 uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 ```
-- API Docs (Swagger UI): `http://localhost:8000/docs`
-- Health Endpoint: `http://localhost:8000/api/v1/health`
+- Interactive Swagger API Documentation: **`http://localhost:8000/docs`**
+- Health check: **`http://localhost:8000/api/v1/health`**
 
 ---
 
-## 📱 Running the Flutter Android Patient App
-
-### Prerequisites
-- Flutter SDK `3.13.2+`
-- Android Studio / Android SDK (API 34+)
-- Connected Android Device (USB / Wireless ADB) or Android Emulator
-
-### Step 1: Install Dependencies
-```bash
-cd mobile
-flutter pub get
-```
-
-### Step 2: Bridge Device Network (Physical Devices)
-If testing on a physical Android phone connected via USB or wireless ADB:
-```bash
-adb reverse tcp:8000 tcp:8000
-```
-*(This allows the Android app to connect directly to your local FastAPI backend at `http://127.0.0.1:8000`).*
-
-### Step 3: Build and Run
-```bash
-# Run on connected device in debug mode
-flutter run
-
-# Or build native release/debug APK:
-flutter build apk --debug --target-platform android-arm64
-adb install -r build/app/outputs/flutter-apk/app-debug.apk
-```
-
----
-
-## 💻 Running the Doctor Web Portal
-
+### 5. Start Web Portals (Patient :5173 & Doctor :5174)
+Open a new terminal window:
 ```bash
 cd web
 npm install
+
+# Start both web surfaces concurrently with one command
 npm run dev
 ```
-Visit **`http://localhost:5173`** in your browser.
-- **Doctor Login:** `http://localhost:5173/doctor/login`
-  - **Username:** `dr.ayush`
-  - **Password:** `demo_password123`
+
+This single command launches both independent web portals:
+- 🌐 **Patient Intake Web Portal**: **`http://localhost:5173`**
+  - Walk through patient self-onboarding, bilingual complaint voice recording, and OPD token generation.
+- 🩺 **Doctor Clinical Workstation**: **`http://localhost:5174`**
+  - Login with:
+    - **Username:** `dr.ayush`
+    - **Password:** `demo_password123`
+  - Review live triage queue, inspect AI draft summaries, and issue validated prescriptions.
+
+*(Alternatively, you can run them individually using `npm run dev:patient` or `npm run dev:doctor`).*
 
 ---
 
-## 🤖 Configuring AI Intelligence Providers
+### 6. Run the Android Patient App (Optional)
+Open a new terminal window:
+```bash
+cd mobile
+flutter pub get
 
-In `backend/.env`, configure your preferred intelligence engine:
+# If testing on a physical Android device connected via USB:
+adb reverse tcp:8000 tcp:8000
 
-### Option A: Groq Cloud (Recommended — Free & Sub-Second Latency)
+# Run on your connected device or emulator:
+flutter run
+```
+> For complete mobile architecture, design tokens, and canonical 26-screen mapping, refer to the [Mobile README](mobile/README.md).
+
+---
+
+## 🔑 Key Features
+
+- **Dual Dedicated Web Surfaces**:
+  - `http://localhost:5173`: Clean, high-contrast, patient-facing intake portal designed for kiosks and personal browsers.
+  - `http://localhost:5174`: Specialized high-density doctor workstation adhering to the Forest Sage clinical theme.
+- **Bilingual Voice Intake**: Hindi & English conversational symptom capture with real-time waveform and editable transcript.
+- **AYUSH Prakriti Questionnaire**: Constitutional assessment (Agni, Nidra, Satmya, Koshtha) aligned with classical clinical practice.
+- **Prescription OCR Scanner**: Optical scanner with laser viewfinder, extracted medicine validation, and multi-page support.
+- **Live OPD Queue Tokens**: Boarding-pass styled queue status with dynamic wait-time estimation.
+- **ABDM Milestones 1 & 2**: ABHA ID verification, OTP handshake, and FHIR R4 clinical summary export.
+- **Multi-Provider AI with Zero-Cloud Fallback**: Groq Cloud (`qwen/qwen3.6-27b`), Google Gemini 1.5, local Ollama, or deterministic regex engine (100% offline safety).
+
+---
+
+## 🤖 Configuring AI Providers (Optional)
+
+Configure your preferred LLM provider in `backend/.env`:
+
 ```env
+# Option A: Groq Cloud (Recommended — Free & Sub-Second Latency)
 AI_PRIMARY_PROVIDER=groq
 GROQ_API_KEY=gsk_your_groq_api_key_here
 GROQ_MODEL=qwen/qwen3.6-27b
 FEATURE_CLOUD_AI_FALLBACK=true
-```
 
-### Option B: Google Gemini
-```env
+# Option B: Google Gemini
 AI_PRIMARY_PROVIDER=gemini
-GEMINI_API_KEY=your_gemini_api_key_here
+GEMINI_API_KEY=your_gemini_key_here
 GEMINI_MODEL=gemini-1.5-flash
-FEATURE_CLOUD_AI_FALLBACK=true
-```
 
-### Option C: Local Offline AI with Ollama
-```env
+# Option C: Local Ollama (Completely Offline)
 AI_PRIMARY_PROVIDER=ollama
 OLLAMA_BASE_URL=http://localhost:11434
 OLLAMA_MODEL=llama3.1:8b
 ```
+*If no API key is provided, the backend seamlessly falls back to its deterministic rule engine with zero downtime.*
 
 ---
 
-## 🧪 Testing & Quality Verification
+## 🧪 Testing & Verification
 
-### 1. Mobile Flutter Test Suite & Static Analysis
+### Backend Automated Test Suite
+```bash
+cd backend
+pytest -v tests/
+```
+*(55/55 unit and integration tests passing)*
+
+### Web Portals Linting & Build
+```bash
+cd web
+npm run lint
+npm run build
+```
+
+### Mobile Flutter Analysis & Tests
 ```bash
 cd mobile
-flutter analyze  # 0 issues found (0 errors, 0 warnings, 0 hints)
-flutter test     # 9/9 tests passed (100% pass rate)
-```
-
-### 2. Backend Pytest Suite
-```bash
-docker exec swasthya_backend pytest -v tests/
-# 55/55 passed (100% pass rate)
+flutter analyze  # 0 issues found
+flutter test     # 9/9 tests passing
 ```
 
 ---
 
-## 📁 Project Directory Layout
+## 📁 Repository Structure
 
 ```text
 Patient-Case-Taking-Software/
-├── backend/
-│   ├── alembic/                # Database migrations (PostgreSQL/SQLite)
+├── backend/                  # FastAPI intelligence engine & ABDM integration
 │   ├── app/
-│   │   ├── api/v1/             # Endpoints (auth, intake, abdm, doctor, encounters)
-│   │   ├── core/               # Database engine, config, security & rate limiting
-│   │   ├── models/             # SQLAlchemy ORM clinical models
-│   │   ├── schemas/            # Pydantic validation schemas
-│   │   └── services/           # LLM chains, Whisper ASR, OCR, Safety normalizers
-│   ├── scripts/                # Database seeders (seed.py, seed_encounters.py)
-│   ├── tests/                  # Pytest test suite (55 automated tests)
-│   └── Dockerfile              # Backend container definition
+│   │   ├── api/v1/           # API routes (auth, intake, encounters, abdm, doctor)
+│   │   ├── core/             # Database connection, security, configuration
+│   │   ├── models/           # SQLAlchemy models
+│   │   ├── schemas/          # Pydantic request/response schemas
+│   │   └── services/         # LLM chains, ASR, OCR, FHIR generator
+│   ├── scripts/              # Database seed scripts (seed.py, seed_encounters.py)
+│   └── tests/                # Pytest unit & integration test suite
 │
-├── mobile/                     # Flutter Android Patient Application
-│   ├── lib/
-│   │   ├── core/
-│   │   │   ├── models/         # JSON data models for intake & ABDM
-│   │   │   ├── network/        # Dio client, interceptors, session manager
-│   │   │   ├── router/         # GoRouter path definitions (all 26 screens)
-│   │   │   └── theme/          # AppTheme, Flowstep colors, typography, radii
-│   │   ├── features/
-│   │   │   ├── onboarding/     # Screen 01 Welcome
-│   │   │   ├── identity/       # Screens 03-05 ABHA ID, OTP, Profile
-│   │   │   ├── consent/        # Screen 06 Patient Data Privacy Notice
-│   │   │   ├── interview/      # Screens 07-12 Voice, Transcript, Prakriti
-│   │   │   ├── documents/      # Screens 13-15, 21, 23 Scanner, OCR, Multipage
-│   │   │   ├── review/         # Screen 16 Clinical Case Review Summary
-│   │   │   ├── completion/     # Screens 17 & 26 Live OPD Queue Token & Pharmacy
-│   │   │   └── system/         # Screens 18-20, 22, 24, 25 Offline, Lock, Errors
-│   │   └── shared/widgets/     # AppHeader, StatusBadge, AppButton, ChoiceCard
-│   └── test/                   # Flutter unit & widget test suite
-│
-├── web/                        # React 18 TypeScript Doctor Clinical Portal
+├── web/                      # React 18 + Vite Web Applications
 │   ├── src/
-│   │   ├── features/           # Doctor Login, OPD Queue, Encounter Chart
-│   │   ├── components/         # Design system components
-│   │   └── api/                # Axios API client
-│   └── vite.config.ts          # Vite build configuration
+│   │   ├── features/auth/    # Doctor authentication
+│   │   ├── features/doctor/  # Consultation chart & encounter details
+│   │   ├── features/queue/   # Live OPD triage queue
+│   │   ├── features/intake/  # Patient intake flow (:5173)
+│   │   └── features/public/  # Hospital landing page (:5173)
+│   ├── vite.patient.config.ts# Patient Portal config (Port 5173)
+│   ├── vite.doctor.config.ts # Doctor Workstation config (Port 5174)
+│   └── scripts/dev-all.mjs   # Concurrent dual-surface dev launcher
 │
-├── design/                     # Approved Flowstep Visual Source of Truth
-│   └── patient_mobile_app/     # Screen JSX code & design references
-├── docker-compose.yml          # PostgreSQL 16, MinIO, Backend orchestration
-├── Makefile                    # CLI shortcuts (make up, make test, etc.)
-└── README.md                   # Project documentation
+├── mobile/                   # Flutter Android patient application
+│   ├── lib/                  # Complete Flowstep 26-screen implementation
+│   ├── test/                 # Widget & state machine test suite
+│   └── README.md             # Dedicated mobile documentation & screen index
+│
+├── design/                   # Approved Flowstep UI/UX specifications
+├── docker-compose.yml        # PostgreSQL 16 & MinIO object storage services
+└── README.md                 # System overview & quickstart guide
 ```
 
 ---
 
-## ❓ Troubleshooting & FAQs
+## ⚖️ Clinical Safety & Governance Note
 
-### 1. `SocketException: Connection refused` on Android device
-- **Cause**: The Android device cannot reach `http://127.0.0.1:8000` because `127.0.0.1` refers to the mobile phone itself.
-- **Solution**: Run `adb reverse tcp:8000 tcp:8000` to route phone port 8000 to your host machine's port 8000. For Android Emulator, use `http://10.0.2.2:8000`.
-
-### 2. `Microphone Permission Denied` on Android 14/15/16
-- **Solution**: The app automatically shows Screen 20 (`MicrophonePermissionDeniedScreen`) with step-by-step guidance to enable audio permissions in Android Settings, or allows immediate one-tap transition to text typing mode.
-
-### 3. `alembic: command not found`
-- **Solution**: Activate your virtual environment first (`source backend/venv/bin/activate` or `source .venv/bin/activate`) and run `pip install -e ".[dev]"`.
+SwasthyaSaathi operates strictly within the framework of assistive medical technology:
+1. **No Autonomous Clinical Decisions**: Clinical risk scores and provisional symptom extractions are presented as editable drafts.
+2. **Physician Verification Required**: Prescriptions and diagnoses cannot be finalized without explicit authentication and sign-off by a licensed AYUSH practitioner.
+3. **Tenant & Data Isolation**: Patient public intake tokens have restricted access and cannot inspect other encounters or clinical queues.
 
 ---
 
-## 👥 Contributors & Acknowledgements
-Built for the **Smart India Hackathon (SIH)** — Transforming pre-consultation OPD efficiency across AYUSH Healthcare Institutions through safe, assistive clinical intelligence.
+## 👥 Acknowledgements
+Developed for the **Smart India Hackathon (SIH)** to transform high-volume outpatient case taking across AYUSH hospitals and dispensaries.
