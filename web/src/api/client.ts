@@ -23,7 +23,7 @@ import {
 
 const USE_MOCKS = false; // Set to false to hit real API
 
-const API_BASE = (import.meta.env.VITE_API_BASE_URL || '') + '/api/v1';
+const API_BASE = (import.meta.env.VITE_API_BASE_URL || 'https://swasthya-saathi-5fow.onrender.com') + '/api/v1';
 
 export const apiClient = {
   async login(username: string, password: string): Promise<AuthResponse> {
