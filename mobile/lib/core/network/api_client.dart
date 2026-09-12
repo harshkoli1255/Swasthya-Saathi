@@ -7,8 +7,8 @@ import '../models/api_models.dart';
 // Provide the Dio instance
 final dioProvider = Provider<Dio>((ref) {
   final dio = Dio(BaseOptions(
-    // Default to localhost:8000 for local development/emulator
-    baseUrl: const String.fromEnvironment('API_BASE_URL', defaultValue: 'http://127.0.0.1:8000/api/v1'),
+    // Default to Render live cloud backend
+    baseUrl: const String.fromEnvironment('API_BASE_URL', defaultValue: 'https://swasthya-saathi-5fow.onrender.com/api/v1'),
     connectTimeout: const Duration(seconds: 15),
     receiveTimeout: const Duration(seconds: 30),
     headers: {
