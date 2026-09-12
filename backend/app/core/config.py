@@ -1,5 +1,7 @@
+import json
+from typing import Union
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from pydantic import model_validator
+from pydantic import model_validator, field_validator
 from functools import lru_cache
 
 
@@ -25,7 +27,24 @@ class Settings(BaseSettings):
     access_token_expire_minutes: int = 480
 
     # CORS
-    cors_origins: list[str] = ["*"]
+    cors_origins: Union[list[str], str] = ["*"]
+
+    @field_validator("cors_origins", mode="after")
+    @classmethod
+    def assemble_cors_origins(cls, v: Union[str, list[str]]) -> list[str]:
+        if isinstance(v, str):
+            v_stripped = v.strip()
+            if v_stripped.startswith("[") and v_stripped.endswith("]"):
+                try:
+                    parsed = json.loads(v_stripped)
+                    if isinstance(parsed, list):
+                        return [str(item).strip() for item in parsed]
+                except Exception:
+                    pass
+            return [part.strip() for part in v_stripped.split(",") if part.strip()]
+        elif isinstance(v, list):
+            return [str(item).strip() for item in v]
+        return ["*"]
 
     # MinIO
     minio_endpoint: str = "localhost:9000"
