@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiClient } from '@/api/client';
 import { QueuePatientCard } from '@/types';
@@ -17,20 +17,27 @@ export function QueuePage() {
   const [filter, setFilter] = useState<'ALL' | 'ACTION_REQ' | 'ROUTINE'>('ALL');
   const [sortBy, setSortBy] = useState<'WAIT_DESC' | 'URGENCY' | 'NAME'>('URGENCY');
   const [currentPage, setCurrentPage] = useState(1);
+  const [lastRefreshedAt, setLastRefreshedAt] = useState<Date | null>(null);
+  const [isTabActive, setIsTabActive] = useState(true);
   const itemsPerPage = 12;
 
   const { token } = useAuth();
+  const inFlightRef = useRef(false);
 
   const loadQueue = async (isManual = false) => {
     if (!token) return;
+    if (inFlightRef.current) return;
+    inFlightRef.current = true;
     if (isManual) setRefreshing(true);
     try {
       const data = await apiClient.getQueue(token);
       setQueue(data);
+      setLastRefreshedAt(new Date());
       setError('');
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Failed to load queue');
     } finally {
+      inFlightRef.current = false;
       setLoading(false);
       setRefreshing(false);
     }
@@ -38,8 +45,42 @@ export function QueuePage() {
 
   useEffect(() => {
     loadQueue();
-    const interval = setInterval(() => loadQueue(), 25000);
-    return () => clearInterval(interval);
+
+    let intervalId: ReturnType<typeof setInterval> | null = null;
+
+    const startPolling = () => {
+      if (!intervalId) {
+        intervalId = setInterval(() => {
+          loadQueue();
+        }, 15000);
+      }
+    };
+
+    const stopPolling = () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+        intervalId = null;
+      }
+    };
+
+    const handleVisibilityChange = () => {
+      const active = document.visibilityState === 'visible';
+      setIsTabActive(active);
+      if (active) {
+        loadQueue();
+        startPolling();
+      } else {
+        stopPolling();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    startPolling();
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      stopPolling();
+    };
   }, [token]);
 
   // Counts
@@ -153,7 +194,34 @@ export function QueuePage() {
         </div>
 
         {/* Top Actions */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', flexWrap: 'wrap' }}>
+          <div style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 'var(--space-2)',
+            padding: '4px 10px',
+            backgroundColor: isTabActive ? 'rgba(34, 197, 94, 0.08)' : 'rgba(156, 163, 175, 0.1)',
+            border: isTabActive ? '1px solid rgba(34, 197, 94, 0.25)' : '1px solid var(--color-border)',
+            borderRadius: 'var(--radius-full)',
+            fontSize: 'var(--font-size-xs)',
+            fontWeight: 500,
+            color: isTabActive ? '#15803d' : 'var(--color-text-muted)'
+          }}>
+            <span style={{
+              width: '7px',
+              height: '7px',
+              borderRadius: '50%',
+              backgroundColor: isTabActive ? '#22c55e' : '#9ca3af',
+              boxShadow: isTabActive ? '0 0 6px rgba(34, 197, 94, 0.6)' : 'none'
+            }} />
+            {isTabActive ? 'Near-Real-Time Refresh (15s)' : 'Refresh Paused (Tab Inactive)'}
+            {lastRefreshedAt && isTabActive && (
+              <span style={{ color: 'var(--color-text-muted)', fontSize: '11px', marginLeft: '4px' }}>
+                · {lastRefreshedAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+              </span>
+            )}
+          </div>
+
           <Button 
             variant="secondary" 
             size="sm" 

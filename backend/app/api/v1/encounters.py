@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
 from starlette.concurrency import run_in_threadpool
@@ -18,6 +18,77 @@ from app.schemas.encounter import EncounterOverviewResponse, FactEditPayload, Fa
 
 router = APIRouter(prefix="/encounters", tags=["encounters"])
 
+
+def get_and_authorize_encounter(
+    encounter_id: UUID,
+    current_user: User,
+    db: Session,
+    claim_if_unassigned: bool = False
+) -> Encounter:
+    """
+    Fetches an encounter and verifies strict object-level authorization:
+    1. Validates encounter existence (404 if not found).
+    2. Validates patient active status (404 if soft-deleted).
+    3. Validates facility scope (403 if doctor facility != encounter facility, unless admin).
+    4. Enforces assignment:
+       - If assigned to another doctor and caller is not admin -> 403 Forbidden.
+       - If unassigned and claim_if_unassigned is True:
+         Atomically claims the encounter for current_user using an atomic conditional UPDATE.
+         Records state transition in AuditLog (UNASSIGNED -> CLAIMED / UNDER_REVIEW).
+    """
+    encounter = db.query(Encounter).filter(Encounter.id == encounter_id).first()
+
+    if not encounter:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Encounter not found")
+
+    if encounter.patient and encounter.patient.is_deleted:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Patient record is deactivated")
+
+    # Facility boundary check
+    if current_user.facility and encounter.facility and current_user.facility != encounter.facility and current_user.role not in ("ADMIN", "admin"):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not authorized to access encounters from another facility"
+        )
+
+    # If unassigned and claiming requested, execute atomic conditional update
+    if not encounter.doctor_id and claim_if_unassigned and current_user.role in ("DOCTOR", "doctor"):
+        before_state = {"doctor_id": None, "status": encounter.status}
+        rows_claimed = db.query(Encounter).filter(
+            Encounter.id == encounter_id,
+            Encounter.doctor_id.is_(None)
+        ).update({
+            Encounter.doctor_id: current_user.id,
+            Encounter.status: "UNDER_REVIEW"
+        }, synchronize_session="fetch")
+
+        if rows_claimed > 0:
+            audit = AuditLog(
+                actor_id=current_user.id,
+                entity_id=encounter.id,
+                entity_type="Encounter",
+                edit_type="ENCOUNTER_CLAIMED",
+                before_state=before_state,
+                after_state={"doctor_id": str(current_user.id), "status": "UNDER_REVIEW"}
+            )
+            db.add(audit)
+            db.commit()
+            db.refresh(encounter)
+        else:
+            db.rollback()
+            db.refresh(encounter)
+
+    # Assignment check
+    if encounter.doctor_id:
+        if encounter.doctor_id != current_user.id and current_user.role not in ("ADMIN", "admin"):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Not authorized to access an encounter assigned to another physician"
+            )
+
+    return encounter
+
+
 @router.get("/{encounter_id}/overview", response_model=EncounterOverviewResponse)
 def get_encounter_overview(
     encounter_id: UUID,
@@ -25,9 +96,7 @@ def get_encounter_overview(
     db: Session = Depends(get_db)
 ):
     """Fetch encounter details including patient info and all extracted facts."""
-    encounter = db.query(Encounter).filter(Encounter.id == encounter_id).first()
-    if not encounter:
-        raise HTTPException(status_code=404, detail="Encounter not found")
+    encounter = get_and_authorize_encounter(encounter_id, current_user, db, claim_if_unassigned=True)
 
     from app.core.exceptions import LLMProviderError
     from app.models.session import ClinicalConflict, SafetyAlert
@@ -105,21 +174,26 @@ def get_encounter_overview(
                 "evidence_ids": a.evidence_ids
             })
             
-        # 5. Build Summary with Groq & Gemini Fallback
-        llm_provider = None
+        # 5. Build Summary with Gemini Primary & Groq Fallback
+        gemini_provider = None
+        groq_provider = None
+
+        if settings.gemini_api_key:
+            try:
+                gemini_provider = GeminiProvider()
+            except Exception as e:
+                logger.warning(f"Failed to initialize GeminiProvider for summary: {e}")
+
         if settings.groq_api_key:
             try:
-                llm_provider = GroqProvider()
+                groq_provider = GroqProvider()
             except Exception as e:
                 logger.warning(f"Failed to initialize GroqProvider for summary: {e}")
 
-        if not llm_provider and settings.gemini_api_key:
-            try:
-                llm_provider = GeminiProvider()
-            except Exception as e:
-                logger.warning(f"Failed to initialize GeminiProvider for summary: {e}")
-            
-        generator = SummaryGenerator(llm_provider=llm_provider)
+        primary = gemini_provider if settings.ai_primary_provider == "gemini" else groq_provider
+        fallback = groq_provider if settings.ai_primary_provider == "gemini" else gemini_provider
+
+        generator = SummaryGenerator(llm_provider=primary, fallback_provider=fallback)
         summary_data = generator.generate_summary(db, session_id)
 
     return {
@@ -146,6 +220,8 @@ def update_clinical_fact(
     db: Session = Depends(get_db)
 ):
     """Doctor edits a structured clinical fact. Records an AuditLog."""
+    encounter = get_and_authorize_encounter(encounter_id, current_user, db, claim_if_unassigned=False)
+    
     answer = db.query(ClinicalAnswer).filter(ClinicalAnswer.id == answer_id).first()
     if not answer:
         raise HTTPException(status_code=404, detail="Clinical Fact not found")
@@ -170,8 +246,7 @@ def update_clinical_fact(
     answer.status = "PHYSICIAN_VERIFIED"
     
     # Also update the encounter status to show it is being reviewed
-    encounter = db.query(Encounter).filter(Encounter.id == encounter_id).first()
-    if encounter and encounter.status == "READY_FOR_DOCTOR":
+    if encounter.status in ("READY_FOR_DOCTOR", "REGISTERED"):
         encounter.status = "UNDER_REVIEW"
 
     db.commit()
@@ -184,9 +259,7 @@ def synthesize_encounter_summary(
     db: Session = Depends(get_db)
 ):
     """Trigger live AI clinical case narrative synthesis using Groq."""
-    encounter = db.query(Encounter).filter(Encounter.id == encounter_id).first()
-    if not encounter:
-        raise HTTPException(status_code=404, detail="Encounter not found")
+    encounter = get_and_authorize_encounter(encounter_id, current_user, db, claim_if_unassigned=False)
 
     from app.services.summary_generator import SummaryGenerator
     from app.services.llm.cloud import GroqProvider
@@ -197,20 +270,25 @@ def synthesize_encounter_summary(
         raise HTTPException(status_code=400, detail="No intake session associated with this encounter")
 
     session_id = encounter.intake_session.id
-    llm_provider = None
-    if settings.groq_api_key:
-        try:
-            llm_provider = GroqProvider()
-        except Exception as e:
-            logger.warning(f"Failed to initialize GroqProvider: {e}")
+    gemini_provider = None
+    groq_provider = None
 
-    if not llm_provider and settings.gemini_api_key:
+    if settings.gemini_api_key:
         try:
-            llm_provider = GeminiProvider()
+            gemini_provider = GeminiProvider()
         except Exception as e:
             logger.warning(f"Failed to initialize GeminiProvider: {e}")
 
-    generator = SummaryGenerator(llm_provider=llm_provider)
+    if settings.groq_api_key:
+        try:
+            groq_provider = GroqProvider()
+        except Exception as e:
+            logger.warning(f"Failed to initialize GroqProvider: {e}")
+
+    primary = gemini_provider if settings.ai_primary_provider == "gemini" else groq_provider
+    fallback = groq_provider if settings.ai_primary_provider == "gemini" else gemini_provider
+
+    generator = SummaryGenerator(llm_provider=primary, fallback_provider=fallback)
     summary_data = generator.generate_summary(db, session_id)
     return {"status": "success", "summary": summary_data}
 
@@ -222,8 +300,8 @@ def create_clinical_fact(
     db: Session = Depends(get_db)
 ):
     """Doctor logs a new verified clinical fact during examination."""
-    encounter = db.query(Encounter).filter(Encounter.id == encounter_id).first()
-    if not encounter or not encounter.intake_session:
+    encounter = get_and_authorize_encounter(encounter_id, current_user, db, claim_if_unassigned=False)
+    if not encounter.intake_session:
         raise HTTPException(status_code=404, detail="Encounter or intake session not found")
 
     session = encounter.intake_session
@@ -283,15 +361,7 @@ def get_media_asset(
     if not asset.session or not asset.session.encounter:
         raise HTTPException(status_code=404, detail="Associated encounter not found")
         
-    encounter = asset.session.encounter
-    if encounter.doctor_id and encounter.doctor_id != current_user.id and current_user.role != "admin":
-        raise HTTPException(
-            status_code=403, 
-            detail="Not authorized to access media for an encounter assigned to another physician"
-        )
-        
-    if encounter.patient and encounter.patient.is_deleted:
-        raise HTTPException(status_code=404, detail="Patient record is deactivated")
+    encounter = get_and_authorize_encounter(asset.session.encounter.id, current_user, db, claim_if_unassigned=False)
 
     if not asset.immutable_storage_ref or not os.path.isfile(asset.immutable_storage_ref):
         raise HTTPException(status_code=404, detail="Media file not found on disk")
@@ -326,6 +396,7 @@ def resolve_conflict(
     current_user: Annotated[User, Depends(require_doctor)],
     db: Session = Depends(get_db)
 ):
+    encounter = get_and_authorize_encounter(encounter_id, current_user, db, claim_if_unassigned=False)
     from app.models.session import ClinicalConflict
     conflict = db.query(ClinicalConflict).filter(ClinicalConflict.id == conflict_id).first()
     if not conflict:
@@ -360,6 +431,7 @@ def acknowledge_alert(
     current_user: Annotated[User, Depends(require_doctor)],
     db: Session = Depends(get_db)
 ):
+    encounter = get_and_authorize_encounter(encounter_id, current_user, db, claim_if_unassigned=False)
     from app.models.session import SafetyAlert
     alert = db.query(SafetyAlert).filter(SafetyAlert.id == alert_id).first()
     if not alert:
@@ -388,6 +460,7 @@ def get_export_eligibility(
     current_user: Annotated[User, Depends(require_doctor)],
     db: Session = Depends(get_db)
 ):
+    encounter = get_and_authorize_encounter(encounter_id, current_user, db, claim_if_unassigned=False)
     from app.services.export_gating import ExportEligibilityEvaluator
     
     audit = AuditLog(
@@ -413,6 +486,7 @@ async def export_fhir_bundle(
     current_user: Annotated[User, Depends(require_doctor)],
     db: Session = Depends(get_db)
 ):
+    encounter = get_and_authorize_encounter(encounter_id, current_user, db, claim_if_unassigned=False)
     from app.services.fhir_mapper import FHIRMapper
     from app.services.abdm_mock import MockABDMGateway
     from app.models.export import FHIRExportRecord
@@ -475,12 +549,27 @@ async def export_fhir_bundle(
                 after_state={"failure_reason": fail_reason} if not success else None
             )
             db.add(audit_result)
+
+            # Update encounter status to COMPLETED upon successful export
+            if success:
+                before_status = encounter.status
+                encounter.status = "COMPLETED"
+                db.add(encounter)
+                audit_comp = AuditLog(
+                    actor_id=current_user.id,
+                    entity_id=encounter.id,
+                    entity_type="Encounter",
+                    edit_type="ENCOUNTER_COMPLETED",
+                    before_state={"status": before_status},
+                    after_state={"status": "COMPLETED", "bundle_id": bundle["id"]}
+                )
+                db.add(audit_comp)
+
             db.commit()
 
         await run_in_threadpool(_record_export)
         
         if not success:
-            # We don't raise 500, we return 400 or a controlled payload as requested
             return {"status": "failed", "reason": fail_reason, "code": fail_code}
             
         return {
@@ -506,6 +595,7 @@ def list_export_records(
     current_user: Annotated[User, Depends(require_doctor)],
     db: Session = Depends(get_db)
 ):
+    encounter = get_and_authorize_encounter(encounter_id, current_user, db, claim_if_unassigned=False)
     from app.models.export import FHIRExportRecord
     records = db.query(FHIRExportRecord).filter(FHIRExportRecord.encounter_id == encounter_id).order_by(FHIRExportRecord.created_at.desc()).all()
     

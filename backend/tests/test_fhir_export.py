@@ -26,7 +26,6 @@ def override_get_db():
 async def mock_require_doctor():
     return User(id=uuid.uuid4(), username="dr.test", role="doctor")
 
-app.dependency_overrides[require_doctor] = mock_require_doctor
 client = TestClient(app)
 
 @pytest.fixture
@@ -39,12 +38,14 @@ def test_db():
         db.close()
         
     app.dependency_overrides[get_db] = override_get_db
+    app.dependency_overrides[require_doctor] = mock_require_doctor
     
     db = TestingSessionLocal()
     yield db
     db.close()
     
     app.dependency_overrides.pop(get_db, None)
+    app.dependency_overrides.pop(require_doctor, None)
     Base.metadata.drop_all(engine)
 
 def test_export_eligibility_evaluator(test_db):

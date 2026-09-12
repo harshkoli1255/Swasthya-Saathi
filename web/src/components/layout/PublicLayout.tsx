@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Outlet, Link } from 'react-router-dom';
-import { Button } from '@/components/ui/Button';
 import { Logo } from '@/components/ui/Logo';
 import '@/styles/global.css';
 
@@ -64,40 +63,43 @@ export function PublicLayout() {
               Clinical Philosophy & Ethics
             </Link>
             
-            <div style={{ width: '1px', height: '18px', backgroundColor: 'var(--color-border)' }}></div>
-            
-            <Link 
-              to="/doctor/login" 
-              style={{
-                background: 'linear-gradient(135deg, #FF792E 0%, #E65100 100%)',
-                color: '#ffffff',
-                padding: 'var(--space-2) var(--space-4)',
-                borderRadius: 'var(--radius-md)',
-                fontSize: 'var(--font-size-sm)',
-                fontWeight: 'var(--font-weight-medium)',
-                textDecoration: 'none',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 'var(--space-2)',
-                boxShadow: '0 2px 8px rgba(230, 81, 0, 0.28)',
-                border: '1px solid #C2410C',
-                transition: 'all var(--transition-fast)'
-              }}
-              onMouseEnter={e => {
-                e.currentTarget.style.boxShadow = '0 4px 14px rgba(230, 81, 0, 0.4)';
-                e.currentTarget.style.transform = 'translateY(-1px)';
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.boxShadow = '0 2px 8px rgba(230, 81, 0, 0.28)';
-                e.currentTarget.style.transform = 'translateY(0)';
-              }}
-            >
-              Physician Workstation
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M5 12h14"></path>
-                <path d="M12 5l7 7-7 7"></path>
-              </svg>
-            </Link>
+            {import.meta.env.VITE_APP_SURFACE !== 'patient' && (
+              <>
+                <div style={{ width: '1px', height: '18px', backgroundColor: 'var(--color-border)' }}></div>
+                <Link 
+                  to="/doctor/login" 
+                  style={{
+                    background: 'linear-gradient(135deg, #FF792E 0%, #E65100 100%)',
+                    color: '#ffffff',
+                    padding: 'var(--space-2) var(--space-4)',
+                    borderRadius: 'var(--radius-md)',
+                    fontSize: 'var(--font-size-sm)',
+                    fontWeight: 'var(--font-weight-medium)',
+                    textDecoration: 'none',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 'var(--space-2)',
+                    boxShadow: '0 2px 8px rgba(230, 81, 0, 0.28)',
+                    border: '1px solid #C2410C',
+                    transition: 'all var(--transition-fast)'
+                  }}
+                  onMouseEnter={e => {
+                    e.currentTarget.style.boxShadow = '0 4px 14px rgba(230, 81, 0, 0.4)';
+                    e.currentTarget.style.transform = 'translateY(-1px)';
+                  }}
+                  onMouseLeave={e => {
+                    e.currentTarget.style.boxShadow = '0 2px 8px rgba(230, 81, 0, 0.28)';
+                    e.currentTarget.style.transform = 'translateY(0)';
+                  }}
+                >
+                  Physician Workstation
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M5 12h14"></path>
+                    <path d="M12 5l7 7-7 7"></path>
+                  </svg>
+                </Link>
+              </>
+            )}
           </nav>
 
           {/* Mobile Menu Toggle */}
@@ -155,14 +157,18 @@ export function PublicLayout() {
           >
             Clinical Philosophy & Ethics
           </Link>
-          <div style={{ height: '1px', backgroundColor: 'var(--color-border)' }}></div>
-          <Link 
-            to="/doctor/login" 
-            onClick={() => setIsMobileMenuOpen(false)}
-            style={{ color: 'var(--color-primary-850)', textDecoration: 'none', fontSize: 'var(--font-size-base)', fontWeight: 'var(--font-weight-bold)' }}
-          >
-            Physician Workstation →
-          </Link>
+          {import.meta.env.VITE_APP_SURFACE !== 'patient' && (
+            <>
+              <div style={{ height: '1px', backgroundColor: 'var(--color-border)' }}></div>
+              <Link 
+                to="/doctor/login" 
+                onClick={() => setIsMobileMenuOpen(false)}
+                style={{ color: 'var(--color-primary-850)', textDecoration: 'none', fontSize: 'var(--font-size-base)', fontWeight: 'var(--font-weight-bold)' }}
+              >
+                Physician Workstation →
+              </Link>
+            </>
+          )}
         </div>
       )}
 

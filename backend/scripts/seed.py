@@ -25,8 +25,34 @@ def seed_db():
             db.add(user)
             db.commit()
             print("Demo user created successfully.")
-        else:
-            print("Demo user already exists.")
+        existing_sharma = db.query(User).filter(User.username == "dr.sharma").first()
+        if not existing_sharma:
+            print("Creating demo user 'dr.sharma'...")
+            user = User(
+                username="dr.sharma",
+                password_hash=hash_password("demo_password123"),
+                full_name="Dr. Priya Sharma",
+                role="DOCTOR",
+                facility="Ayurveda Wellness Center",
+                is_active=True
+            )
+            db.add(user)
+            db.commit()
+            print("Demo user dr.sharma created successfully.")
+
+        existing_admin = db.query(User).filter(User.username == "admin").first()
+        if not existing_admin:
+            print("Creating admin user 'admin'...")
+            user = User(
+                username="admin",
+                password_hash=hash_password("admin_password123"),
+                full_name="Hospital Administrator",
+                role="ADMIN",
+                is_active=True
+            )
+            db.add(user)
+            db.commit()
+            print("Admin user created successfully.")
 
 if __name__ == "__main__":
     seed_db()

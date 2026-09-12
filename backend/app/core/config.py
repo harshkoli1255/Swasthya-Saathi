@@ -45,12 +45,12 @@ class Settings(BaseSettings):
     ollama_base_url: str = "http://localhost:11434"
     ollama_model: str = "llama3.1:8b"
     groq_api_key: str = ""
-    groq_model: str = "llama-3.1-8b-instant"
+    groq_model: str = "openai/gpt-oss-20b"
     gemini_api_key: str = ""
-    gemini_model: str = "gemini-1.5-flash"
+    gemini_model: str = "gemini-2.5-flash"
 
     # Feature Flags
-    feature_cloud_ai_fallback: bool = False
+    feature_cloud_ai_fallback: bool = True
     feature_abdm_sandbox: bool = True
 
     # ABDM (Ayushman Bharat Digital Mission) Official Sandbox Configuration

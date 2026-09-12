@@ -14,6 +14,8 @@ export default defineConfig({
     port: 5173,
     cors: true,
     allowedHosts: [
+      'tion-supports-transaction-explaining.trycloudflare.com',
+      'made-relations-fiscal-medicare.trycloudflare.com',
       'lover-bacon-deposits-edit.trycloudflare.com',
       '.trycloudflare.com',
     ],

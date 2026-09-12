@@ -126,17 +126,19 @@ export function DoctorLoginPage() {
           backgroundColor: 'var(--color-background)',
           backgroundImage: 'var(--gradient-flag-diagonal)'
         }}>
-        {/* Back to Site Button */}
-        <div style={{ marginBottom: 'var(--space-8)' }}>
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={() => navigate('/')}
-            leftIcon={<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>}
-          >
-            Back to Platform Overview
-          </Button>
-        </div>
+        {/* Back to Site Button (Hidden on Doctor Surface where patient routes are not mounted) */}
+        {import.meta.env.VITE_APP_SURFACE !== 'doctor' && (
+          <div style={{ marginBottom: 'var(--space-8)' }}>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => navigate('/')}
+              leftIcon={<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>}
+            >
+              Back to Platform Overview
+            </Button>
+          </div>
+        )}
 
         <div style={{
           flex: 1,

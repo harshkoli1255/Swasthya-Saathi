@@ -40,31 +40,42 @@ def test_db():
         yield db
         db.close()
         
+    db = TestingSessionLocal()
+    mock_user = User(
+        id=uuid.uuid4(),
+        username=f"dr.test_{uuid.uuid4().hex[:4]}",
+        password_hash="hashed_pw",
+        full_name="Dr. Test",
+        role="DOCTOR",
+        is_active=True
+    )
+    db.add(mock_user)
+    db.commit()
+
     async def mock_require_doctor():
-        return User(id=uuid.uuid4(), username="dr.test", role="doctor")
+        return mock_user
         
     app.dependency_overrides[get_db] = override_get_db
     app.dependency_overrides[require_doctor] = mock_require_doctor
     
-    db = TestingSessionLocal()
-    yield db
+    yield (db, mock_user)
     db.close()
     
-    app.dependency_overrides.pop(get_db, None)
-    app.dependency_overrides.pop(require_doctor, None)
+    app.dependency_overrides.clear()
 
 def test_resolve_conflict_endpoint(test_db):
+    db, mock_user = test_db
     pat = Patient(full_name="Test", age=30, sex="Male")
-    test_db.add(pat)
-    test_db.commit()
+    db.add(pat)
+    db.commit()
     
-    enc = Encounter(patient_id=pat.id, opd_id="123", status="UNDER_REVIEW")
-    test_db.add(enc)
-    test_db.commit()
+    enc = Encounter(patient_id=pat.id, opd_id="123", doctor_id=mock_user.id, status="UNDER_REVIEW")
+    db.add(enc)
+    db.commit()
     
     sess = IntakeSession(encounter_id=enc.id, public_token="abc", state="INTERVIEW", language="en")
-    test_db.add(sess)
-    test_db.commit()
+    db.add(sess)
+    db.commit()
 
     conflict = ClinicalConflict(
         session_id=sess.id,
@@ -73,8 +84,8 @@ def test_resolve_conflict_endpoint(test_db):
         fact_id_2=uuid.uuid4(),
         relationship_status="UNRESOLVED"
     )
-    test_db.add(conflict)
-    test_db.commit()
+    db.add(conflict)
+    db.commit()
 
     response = client.patch(
         f"/api/v1/encounters/{enc.id}/conflicts/{conflict.id}/resolve",
@@ -84,29 +95,30 @@ def test_resolve_conflict_endpoint(test_db):
     assert response.status_code == 200
     
     # Verify DB update
-    test_db.refresh(conflict)
+    db.refresh(conflict)
     assert conflict.relationship_status == "RESOLVED"
     assert conflict.resolution_notes == "All good"
     
     # Verify AuditLog
     from app.models.audit import AuditLog
-    audit = test_db.query(AuditLog).filter(AuditLog.entity_id == conflict.id).first()
+    audit = db.query(AuditLog).filter(AuditLog.entity_id == conflict.id).first()
     assert audit is not None
     assert audit.edit_type == "UPDATE"
     assert audit.after_state["relationship_status"] == "RESOLVED"
 
 def test_acknowledge_alert_endpoint(test_db):
+    db, mock_user = test_db
     pat = Patient(full_name="Test", age=30, sex="Male")
-    test_db.add(pat)
-    test_db.commit()
+    db.add(pat)
+    db.commit()
     
-    enc = Encounter(patient_id=pat.id, opd_id="123", status="UNDER_REVIEW")
-    test_db.add(enc)
-    test_db.commit()
+    enc = Encounter(patient_id=pat.id, opd_id="123", doctor_id=mock_user.id, status="UNDER_REVIEW")
+    db.add(enc)
+    db.commit()
     
     sess = IntakeSession(encounter_id=enc.id, public_token="abc", state="INTERVIEW", language="en")
-    test_db.add(sess)
-    test_db.commit()
+    db.add(sess)
+    db.commit()
 
     alert = SafetyAlert(
         session_id=sess.id,
@@ -117,8 +129,8 @@ def test_acknowledge_alert_endpoint(test_db):
         matched_fact_ids=[],
         evidence_ids=[]
     )
-    test_db.add(alert)
-    test_db.commit()
+    db.add(alert)
+    db.commit()
 
     response = client.patch(
         f"/api/v1/encounters/{enc.id}/alerts/{alert.id}/acknowledge",
@@ -127,10 +139,10 @@ def test_acknowledge_alert_endpoint(test_db):
     
     assert response.status_code == 200
     
-    test_db.refresh(alert)
+    db.refresh(alert)
     assert alert.status == "REVIEWED_AND_DISMISSED"
     
     from app.models.audit import AuditLog
-    audit = test_db.query(AuditLog).filter(AuditLog.entity_id == alert.id).first()
+    audit = db.query(AuditLog).filter(AuditLog.entity_id == alert.id).first()
     assert audit is not None
     assert audit.after_state["status"] == "REVIEWED_AND_DISMISSED"

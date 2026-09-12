@@ -4,8 +4,12 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
+    "dev": "node scripts/dev-all.mjs",
+    "dev:patient": "vite --config vite.patient.config.ts",
+    "dev:doctor": "vite --config vite.doctor.config.ts",
+    "build": "npm run build:patient && npm run build:doctor",
+    "build:patient": "tsc && vite build --config vite.patient.config.ts",
+    "build:doctor": "tsc && vite build --config vite.doctor.config.ts",
     "preview": "vite preview",
     "lint": "eslint ."
   },

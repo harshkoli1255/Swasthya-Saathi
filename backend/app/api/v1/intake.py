@@ -78,6 +78,28 @@ def get_session_status(request: Request, public_token: str, db: Session = Depend
     """Validates the intake link and returns basic patient/session info."""
     session = get_session_by_token(public_token, db)
     patient = session.encounter.patient
+    encounter = session.encounter
+    queue_ahead = 0
+    calling_token = None
+    if encounter:
+        from app.models.patient import Encounter as EncounterModel
+        earlier_waiting = db.query(EncounterModel).filter(
+            EncounterModel.status.in_(["READY_FOR_DOCTOR", "UNDER_REVIEW"]),
+            EncounterModel.created_at < encounter.created_at,
+            EncounterModel.id != encounter.id
+        ).count()
+        queue_ahead = earlier_waiting
+
+        calling_enc = db.query(EncounterModel).filter(
+            EncounterModel.status == "UNDER_REVIEW"
+        ).order_by(EncounterModel.created_at.asc()).first()
+        if not calling_enc:
+            calling_enc = db.query(EncounterModel).filter(
+                EncounterModel.status == "READY_FOR_DOCTOR"
+            ).order_by(EncounterModel.created_at.asc()).first()
+        if calling_enc:
+            calling_token = calling_enc.opd_id
+
     return SessionStatus(
         public_token=session.public_token,
         state=session.state,
@@ -91,7 +113,13 @@ def get_session_status(request: Request, public_token: str, db: Session = Depend
         verification_reference=patient.verification_reference,
         abha_number=patient.abha_number,
         abha_address=patient.abha_address,
-        language=session.language
+        opd_id=session.encounter.opd_id,
+        language=session.language,
+        encounter_status=encounter.status if encounter else None,
+        queue_position=queue_ahead + 1 if encounter else None,
+        queue_ahead=queue_ahead,
+        estimated_wait_minutes=max(5, queue_ahead * 8),
+        calling_token=calling_token
     )
 
 @router.post("/{public_token}/consent", response_model=SessionStatus, dependencies=[Depends(public_intake_limiter)])
@@ -133,6 +161,7 @@ def submit_consent(request: Request, public_token: str, payload: ConsentPayload,
         verification_reference=patient.verification_reference,
         abha_number=patient.abha_number,
         abha_address=patient.abha_address,
+        opd_id=session.encounter.opd_id,
         language=session.language
     )
 

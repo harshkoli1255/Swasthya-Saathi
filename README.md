@@ -1,260 +1,277 @@
 # 🌿 SwasthyaSaathi (स्वास्थ्य साथी)
-### *Structured Pre-Consultation Clinical Intake & Decision Support System for AYUSH OPDs*
+### *Intelligent Pre-Consultation Clinical Intake & Decision Support System for AYUSH Healthcare*
 
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-009688.svg?style=flat&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
+[![Flutter](https://img.shields.io/badge/Flutter-3.x-02569B.svg?style=flat&logo=flutter&logoColor=white)](https://flutter.dev)
 [![React](https://img.shields.io/badge/React-18.3-61DAFB.svg?style=flat&logo=react&logoColor=black)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.5-3178C6.svg?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1.svg?style=flat&logo=postgresql&logoColor=white)](https://www.postgresql.org)
+[![ABDM](https://img.shields.io/badge/ABDM-Milestone%201%20%26%202-EA580C.svg?style=flat)](https://abdm.gov.in)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-SwasthyaSaathi is an intelligent pre-consultation workflow software built for **AYUSH (Ayurveda, Yoga, Unani, Siddha, Homeopathy)** and **Integrative Medicine** outpatient departments. 
-
-It captures comprehensive, multimodal patient history (bilingual conversational intake, voice, and past medical records) **before** the patient steps into the doctor's cabin, synthesizing it into an **evidence-grounded, verified clinical draft summary** for the physician.
+> **Clinical Governance Mandate:**  
+> **"AI ASSISTS. PHYSICIAN DECIDES."**  
+> SwasthyaSaathi is an assistive pre-consultation intake platform. It does not perform autonomous diagnosis, clinical triage decisions, or drug prescriptions. All captured symptoms and AI-extracted formulations are delivered to the registered AYUSH physician as structured draft findings pending direct clinical examination.
 
 ---
 
 ## 📑 Table of Contents
-1. [Architecture Overview](#-architecture-overview)
-2. [Prerequisites](#-prerequisites)
-3. [Quick Start (Docker — Recommended)](#-method-1-quick-start-with-docker-recommended)
-4. [Manual Local Setup (Without Docker)](#-method-2-manual-local-setup-without-docker)
-5. [Configuring AI Providers (Groq / Gemini / Ollama)](#-configuring-ai-providers)
-6. [Accessing the Application & Default Logins](#-accessing-the-application--default-logins)
-7. [Project Directory Layout](#-project-directory-layout)
-8. [Helpful Makefile Commands](#-helpful-makefile-commands)
-9. [Troubleshooting & FAQs](#-troubleshooting--faqs)
+1. [System Overview & Architecture](#-system-overview--architecture)
+2. [Key Subsystems](#-key-subsystems)
+   - [Android Patient Mobile App (`/mobile`)](#1-android-patient-mobile-app-mobile)
+   - [FastAPI Intelligence Backend (`/backend`)](#2-fastapi-clinical-backend-backend)
+   - [Doctor Workstation Portal (`/web`)](#3-doctor-clinical-workstation-web)
+3. [Canonical 26-Screen Patient Journey](#-canonical-26-screen-patient-mobile-journey)
+4. [Quick Start (Docker — Recommended)](#-quick-start-with-docker-recommended)
+5. [Running the Android Mobile App](#-running-the-flutter-android-patient-app)
+6. [Running the Doctor Web Portal](#-running-the-doctor-web-portal)
+7. [Configuring AI Intelligence (Groq / Gemini / Ollama)](#-configuring-ai-intelligence-providers)
+8. [Testing & Quality Verification](#-testing--quality-verification)
+9. [Project Directory Layout](#-project-directory-layout)
+10. [Troubleshooting & FAQs](#-troubleshooting--faqs)
 
 ---
 
-## 🏛 Architecture Overview
+## 🏛 System Overview & Architecture
+
+SwasthyaSaathi bridges the critical communication gap in high-volume AYUSH (Ayurveda, Yoga & Naturopathy, Unani, Siddha, Homeopathy) and Integrative Medicine OPD clinics. By capturing patient history, bilingual voice narratives, and paper prescriptions **before** the patient steps into the examination cabin, it synthesizes an evidence-grounded clinical draft for the physician.
 
 ```mermaid
 graph TD
-    Patient[Patient / Caregiver] -->|Bilingual Voice & Text Intake| WebPatient[Web / Mobile Intake Portal]
-    WebPatient -->|HTTP / REST| API[FastAPI Backend :8000]
-    API -->|Store Encounters & Facts| DB[(PostgreSQL 16 :5432)]
-    API -->|Upload Prescriptions & Reports| MinIO[(MinIO S3 Storage :9000)]
-    API -->|Clinical Fact Extraction & Summary| LLM[AI Layer: Groq / Gemini / Ollama]
-    Doctor[AYUSH Physician] -->|Reviews Triage & Verified Draft| DoctorPortal[Doctor Clinical Workstation :5173]
+    subgraph Patient Touchpoints
+        Mobile[Flutter Android Patient App :8000]
+        WebPatient[Web Intake Portal :5173]
+    end
+
+    subgraph Backend Core [FastAPI :8000]
+        API[Intake & Encounters API]
+        ASR[Bilingual Voice Transcription Pipeline]
+        OCR[Document & Prescription Processing]
+        LLM[Multi-Provider LLM Extraction Chain]
+        TriageEngine[Deterministic Clinical Normalizer]
+    end
+
+    subgraph Persistence & Storage
+        DB[(PostgreSQL 16 :5432)]
+        S3[(MinIO Storage :9000)]
+    end
+
+    subgraph Clinical Touchpoints
+        DoctorWorkstation[Doctor Clinical Portal :5173]
+        ABDMGateway[ABDM Sandbox Gateway]
+    end
+
+    Mobile -->|REST API / TCP reverse| API
+    WebPatient -->|HTTP / JSON| API
+    API --> DB
+    API --> S3
+    API --> ASR
+    API --> OCR
+    API --> LLM
+    LLM --> TriageEngine
+    TriageEngine --> DB
+    DoctorWorkstation -->|Session Review & Prescription| API
+    API -->|ABHA M1/M2 Linkage & FHIR Export| ABDMGateway
 ```
 
-- **Frontend (`/web`):** React 18, TypeScript, Vite, TanStack Query, Forest Sage Clinical Design System.
-- **Backend (`/backend`):** Python 3.11+, FastAPI, SQLAlchemy 2.0, Alembic, Pydantic v2.
-- **Database & Storage:** PostgreSQL 16 (relational clinical data) & MinIO (S3-compatible document storage).
-- **AI Intelligence:** Multi-provider fallback chain (Groq Cloud LLMs, Google Gemini Flash, or local Ollama) + Deterministic Clinical Normalization Engine.
+---
+
+## 📦 Key Subsystems
+
+### 1. Android Patient Mobile App (`/mobile`)
+- **Technology**: Built using **Flutter 3** with `flutter_riverpod` state management, `go_router` navigation, `record` audio streaming, and `dio` networking.
+- **Design System**: Strict alignment with approved **Flowstep visual designs** (`AppTheme`):
+  - Primary Saffron (`#EA580C`), Clinical Emerald (`#059669`), Dark Slate (`#090D16`), Surface (`#F8FAFC`).
+  - Standardized `20dp` card radius, `16dp` interactive controls, and `56dp` minimum touch targets.
+- **Key Modules**:
+  - **ABDM Health ID (Step 1-3)**: 14-digit ABHA input, OTP validation, verified demographic profile linking.
+  - **Voice Intake Engine**: Bilingual Hindi/English speech recording with real-time 21-bar acoustic waveform visualizer and editable transcription review.
+  - **AYUSH Prakriti Questionnaire**: Constitutional profiling across Agni (digestion), Nidra (sleep quality), and Satmya (thermal adaptation).
+  - **Prescription Scanner & OCR**: Optical viewfinder with laser detection line, extracted medication review, and multi-page carousel.
+  - **Live OPD Queue Token**: Boarding-pass styled queue status with real-time patient-ahead computation, estimated wait times, and consultation progress stepper.
+  - **System States**: Dedicated offline mode, privacy session lock (10-min inactivity), microphone permission fallbacks, and paper scanning empty states.
+
+### 2. FastAPI Clinical Backend (`/backend`)
+- **Technology**: Python 3.11+, **FastAPI**, SQLAlchemy 2.0 (Async), Alembic, Pydantic v2.
+- **Multi-Provider AI Intelligence**:
+  - Primary: High-speed **Groq Cloud** (`qwen/qwen3.6-27b`, `llama-3.1-8b-instant`).
+  - Secondary Fallback: **Google Gemini 1.5 Flash**.
+  - On-Premises Local Fallback: **Ollama** (`llama3.1:8b`).
+  - Zero-Cloud Safety Fallback: Deterministic regex and clinical dictionary extraction engine ensuring 100% uptime with zero API keys.
+- **Clinical Safety & Authorization**:
+  - Patient tenant isolation: public intake tokens cannot query doctor queues or cross-examine other encounters.
+  - ABDM Milestones 1 & 2 integration with RSA-OAEP encryption and mock sandbox adapter.
+  - Full FHIR R4 export mapper for clinical summaries.
+
+### 3. Doctor Clinical Workstation (`/web`)
+- **Technology**: React 18, TypeScript, Vite, TanStack Query, Forest Sage Clinical Design System.
+- **Features**: Real-time triage priority list (Emergency / Urgent / Routine), dual-column consultation chart, verified AI draft summary review, raw transcript audio playback, document viewer, and prescription writing.
 
 ---
 
-## 🧰 Prerequisites
+## 📱 Canonical 26-Screen Patient Mobile Journey
 
-Before you start, make sure you have the following installed on your computer:
-
-| Requirement | Minimum Version | How to check | Installation Link |
-| :--- | :--- | :--- | :--- |
-| **Node.js** | `v18.0.0+` | `node -v` | [nodejs.org](https://nodejs.org/) |
-| **Python** | `3.11+` | `python3 --version` | [python.org](https://www.python.org/downloads/) |
-| **Git** | Any | `git --version` | [git-scm.com](https://git-scm.com/) |
-| **Docker & Docker Compose** *(Optional, recommended)* | Latest | `docker compose version` | [docker.com](https://www.docker.com/) |
+| Screen # | State / Milestone | Description & Flowstep Alignment |
+|---|---|---|
+| **01** | **Welcome & Language Entry** | High-contrast hero, 56dp CTA buttons, hospital branding, trust strip |
+| **02** | **Language Selector Sheet** | 32dp rounded modal bottom sheet with native script language cards (`English`, `हिन्दी`, `मराठी`, `ગુજરાતી`) |
+| **03** | **ABHA ID Input (Step 1)** | 14-digit ABHA ID entry with ABDM Mock Sandbox environment indicator |
+| **04** | **ABHA OTP Verification (Step 2)** | 6-box OTP entry, 60s countdown timer, and secure verification |
+| **05** | **Verified ABHA Profile (Step 3)** | Verified demographic card, linked hospital records, and ABDM Linked badge |
+| **06** | **Patient Consent Notice** | Granular data switches (Voice, OCR, AYUSH markers) and clinical governance notice |
+| **07** | **Voice Intake (Chief Complaint)** | High-contrast symptom prompt with quick symptom selection chips |
+| **08** | **Voice Recording Listening** | 21-bar pulsating acoustic waveform, active timer, and live voice listening |
+| **09** | **Voice Processing State** | Saffron circular spinner with multi-phase intake structuring checklist |
+| **10** | **Transcript Review & Edit** | Bilingual transcription edit container with character counter |
+| **11** | **Adaptive Clinical Follow-up** | Dynamic follow-up questions (`Does burning happen immediately after meals?`) |
+| **12** | **AYUSH Prakriti Intake** | Constitutional selectors: Agni (Digestion), Nidra (Sleep), Satmya (Season) |
+| **13** | **Document Scanner Viewfinder** | Architectural camera viewfinder with laser corner brackets and shutter control |
+| **14** | **Document OCR Processing** | Animated laser sweep line and extracted medication overlay chips |
+| **15** | **Extracted Document Review** | Prescribing clinic card, identified AYUSH medicines, and doctor cross-exam notice |
+| **16** | **Clinical Case Review Summary** | Pre-consultation summary card with physician examination disclosure |
+| **17** | **OPD Token & Live Queue** | Dark boarding pass card (`OPD • A42`), queue position, wait time, doctor card, and consultation progress stepper |
+| **18** | **Network Offline State** | Amber banner, cached local token, hospital Wi-Fi reconnect CTA |
+| **19** | **Session Inactivity / Lock State** | Privacy lock modal triggering after 10 minutes of inactivity |
+| **20** | **Microphone Permission Denied** | Android permission instructions and seamless switch to text typing mode |
+| **21** | **Document Processing Failure** | Error banner, blurry scan tips, and retry capture action |
+| **22** | **Camera Unavailable State** | Camera hardware failure fallback to gallery photo picker |
+| **23** | **Multi-page Document Carousel** | Multi-document carousel (`P1: Prescription`, `P2: Lab Report`) with add page CTA |
+| **24** | **Empty Health Records State** | First-visit guidance and paper prescription scanner CTA |
+| **25** | **Exit Confirmation Sheet** | Pause symptom intake sheet with draft preservation |
+| **26** | **Dispensary Token Reference** | Post-consultation pharmacy token (`PHARMACY • P18`), stock status, and medicine checklist |
 
 ---
 
-## 🚀 Method 1: Quick Start with Docker (Recommended)
-
-This is the fastest and cleanest way to run PostgreSQL, MinIO, and all services without installing databases on your machine.
+## 🚀 Quick Start with Docker (Recommended)
 
 ### Step 1: Clone the Repository
-Open your terminal and clone the repository:
 ```bash
 git clone https://github.com/harshkoli1255/Swasthya-Saathi.git
 cd Swasthya-Saathi
 ```
 
-### Step 2: Set Up Environment Files
-Copy the sample environment variables for both root and backend:
+### Step 2: Environment Setup
 ```bash
-# In the project root:
 cp .env.example .env
 cp backend/.env.example backend/.env
 ```
 
-### Step 3: Start Databases (PostgreSQL & MinIO)
-Run Docker Compose to launch PostgreSQL (port `5432`) and MinIO (ports `9000` & `9001`):
+### Step 3: Launch PostgreSQL & MinIO
 ```bash
 docker compose up -d db minio
-# Or simply:
-make up
+# Or: make up
 ```
-*Wait ~5–10 seconds for the database container to become healthy.*
 
-### Step 4: Run Database Migrations & Seed Demo Data
-Apply the database schema and load demo doctors, clinical questions, and sample patient OPD cases:
+### Step 4: Run Migrations & Seed Data
 ```bash
-# 1. Apply schema migrations
 cd backend
+# With your python environment active:
 alembic upgrade head
-
-# 2. Seed default doctor user (dr.ayush)
-python scripts/seed.py
-
-# 3. Seed clinical intake question bank (AYUSH + General)
-python scripts/seed_questions.py
-
-# 4. Seed sample patient queue
-python scripts/seed_encounters.py
-
+python scripts/seed.py             # Creates default doctor: dr.ayush / demo_password123
+python scripts/seed_questions.py   # Seeds AYUSH & general intake question bank
+python scripts/seed_encounters.py  # Seeds sample patient OPD queue
 cd ..
 ```
 
-### Step 5: Start the Backend Server
-In your backend terminal:
+### Step 5: Start FastAPI Backend
 ```bash
 cd backend
 uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 ```
-Backend will be live at: **`http://localhost:8000`** (Interactive Docs: **`http://localhost:8000/docs`**).
-
-### Step 6: Start the Frontend Web App
-Open a **new terminal tab or window**:
-```bash
-cd web
-npm install
-npm run dev
-```
-Frontend will be live at: **`http://localhost:5173`**.
+- API Docs (Swagger UI): `http://localhost:8000/docs`
+- Health Endpoint: `http://localhost:8000/api/v1/health`
 
 ---
 
-## 🛠 Method 2: Manual Local Setup (Without Docker)
+## 📱 Running the Flutter Android Patient App
 
-If you don't have Docker installed or prefer running directly on your operating system with **SQLite** or a local **PostgreSQL** instance:
+### Prerequisites
+- Flutter SDK `3.13.2+`
+- Android Studio / Android SDK (API 34+)
+- Connected Android Device (USB / Wireless ADB) or Android Emulator
 
-### Step 1: Set Up Python Virtual Environment
+### Step 1: Install Dependencies
 ```bash
-cd backend
-
-# Create virtual environment
-python3 -m venv venv
-
-# Activate virtual environment
-# On macOS / Linux:
-source venv/bin/activate
-# On Windows:
-# venv\Scripts\activate
-
-# Install all backend dependencies
-pip install --upgrade pip
-pip install -e ".[dev]"
+cd mobile
+flutter pub get
 ```
 
-### Step 2: Configure Environment Variables
-Copy the backend `.env.example` to `.env`:
+### Step 2: Bridge Device Network (Physical Devices)
+If testing on a physical Android phone connected via USB or wireless ADB:
 ```bash
-cp .env.example .env
+adb reverse tcp:8000 tcp:8000
 ```
-Open `backend/.env` in your code editor:
-- **To use SQLite (Zero configuration):**
-  ```env
-  DATABASE_URL=sqlite:///./swasthyasaathi.db
-  ENVIRONMENT=development
-  DEBUG=true
-  ```
-- **To use local PostgreSQL:**
-  ```env
-  DATABASE_URL=postgresql://your_user:your_password@localhost:5432/swasthyasaathi
-  ```
+*(This allows the Android app to connect directly to your local FastAPI backend at `http://127.0.0.1:8000`).*
 
-### Step 3: Apply Migrations & Seed Data
-With your virtual environment active in `backend/`:
+### Step 3: Build and Run
 ```bash
-alembic upgrade head
-python scripts/seed.py
-python scripts/seed_questions.py
-python scripts/seed_encounters.py
+# Run on connected device in debug mode
+flutter run
+
+# Or build native release/debug APK:
+flutter build apk --debug --target-platform android-arm64
+adb install -r build/app/outputs/flutter-apk/app-debug.apk
 ```
 
-### Step 4: Launch Backend
-```bash
-uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
-```
+---
 
-### Step 5: Launch Frontend
-Open a new terminal:
+## 💻 Running the Doctor Web Portal
+
 ```bash
 cd web
 npm install
 npm run dev
 ```
 Visit **`http://localhost:5173`** in your browser.
+- **Doctor Login:** `http://localhost:5173/doctor/login`
+  - **Username:** `dr.ayush`
+  - **Password:** `demo_password123`
 
 ---
 
-## 🤖 Configuring AI Providers
+## 🤖 Configuring AI Intelligence Providers
 
-SwasthyaSaathi includes a multi-tiered AI extraction & clinical summary engine. By default, it features a **fail-safe deterministic engine** that works even with zero API keys. 
+In `backend/.env`, configure your preferred intelligence engine:
 
-To enable generative AI clinical summaries and smart slot extraction:
-
-### Option A: Groq Cloud (Fastest & Free Tier Available)
-1. Sign up and generate a free API key at [console.groq.com](https://console.groq.com/).
-2. In `backend/.env`, set:
-   ```env
-   AI_PRIMARY_PROVIDER=groq
-   GROQ_API_KEY=gsk_your_groq_api_key_here
-   GROQ_MODEL=qwen/qwen3.6-27b
-   FEATURE_CLOUD_AI_FALLBACK=true
-   ```
+### Option A: Groq Cloud (Recommended — Free & Sub-Second Latency)
+```env
+AI_PRIMARY_PROVIDER=groq
+GROQ_API_KEY=gsk_your_groq_api_key_here
+GROQ_MODEL=qwen/qwen3.6-27b
+FEATURE_CLOUD_AI_FALLBACK=true
+```
 
 ### Option B: Google Gemini
-1. Get an API key from [Google AI Studio](https://aistudio.google.com/).
-2. In `backend/.env`, set:
-   ```env
-   AI_PRIMARY_PROVIDER=gemini
-   GEMINI_API_KEY=your_gemini_api_key_here
-   GEMINI_MODEL=gemini-1.5-flash
-   FEATURE_CLOUD_AI_FALLBACK=true
-   ```
+```env
+AI_PRIMARY_PROVIDER=gemini
+GEMINI_API_KEY=your_gemini_api_key_here
+GEMINI_MODEL=gemini-1.5-flash
+FEATURE_CLOUD_AI_FALLBACK=true
+```
 
 ### Option C: Local Offline AI with Ollama
-1. Download and install [Ollama](https://ollama.com/).
-2. Pull the model:
-   ```bash
-   ollama run llama3.1:8b
-   ```
-3. In `backend/.env`, set:
-   ```env
-   AI_PRIMARY_PROVIDER=ollama
-   OLLAMA_BASE_URL=http://localhost:11434
-   OLLAMA_MODEL=llama3.1:8b
-   ```
+```env
+AI_PRIMARY_PROVIDER=ollama
+OLLAMA_BASE_URL=http://localhost:11434
+OLLAMA_MODEL=llama3.1:8b
+```
 
 ---
 
-## 🔐 Accessing the Application & Default Logins
+## 🧪 Testing & Quality Verification
 
-Once both backend (`:8000`) and frontend (`:5173`) are running:
+### 1. Mobile Flutter Test Suite & Static Analysis
+```bash
+cd mobile
+flutter analyze  # 0 issues found (0 errors, 0 warnings, 0 hints)
+flutter test     # 9/9 tests passed (100% pass rate)
+```
 
-### 1. Doctor Portal
-- **URL:** [http://localhost:5173/doctor/login](http://localhost:5173/doctor/login)
-- **Demo Username:** `dr.ayush`
-- **Demo Password:** `demo_password123`
-- **What to explore:**
-  - **OPD Triage Queue:** Real-time patient priority list with color-coded severity bars (Emergency, Urgent, Routine) and waiting times.
-  - **Clinical Consultation Chart:** Dual-column workstation with Patient Demographics, Verified AI Draft Summary, Timeline, Document Viewer, and AYUSH Prakriti/Agni indicators.
-
-### 2. Patient Pre-Consultation Intake
-- **URL:** [http://localhost:5173/](http://localhost:5173/)
-- Click **"Experience Patient Intake"** on the landing page or use any active intake token link generated by `seed_encounters.py`.
-- **What to explore:**
-  - Multilingual selection (English & Hindi).
-  - Progressive conversational questions (Chief complaint, duration, digestion/Agni, sleep quality, thermal preferences).
-  - Prescription & document camera/file uploader.
-
-### 3. Developer Endpoints
-- **Interactive OpenAPI Documentation (Swagger UI):** [http://localhost:8000/docs](http://localhost:8000/docs)
-- **Alternative API Docs (ReDoc):** [http://localhost:8000/redoc](http://localhost:8000/redoc)
-- **MinIO Storage Dashboard:** [http://localhost:9001](http://localhost:9001)
-  - Username: `swasthya_minio`
-  - Password: `swasthya_minio_secret`
+### 2. Backend Pytest Suite
+```bash
+docker exec swasthya_backend pytest -v tests/
+# 55/55 passed (100% pass rate)
+```
 
 ---
 
@@ -263,72 +280,65 @@ Once both backend (`:8000`) and frontend (`:5173`) are running:
 ```text
 Patient-Case-Taking-Software/
 ├── backend/
-│   ├── alembic/                # Database migrations (Postgres/SQLite schema)
+│   ├── alembic/                # Database migrations (PostgreSQL/SQLite)
 │   ├── app/
-│   │   ├── api/v1/             # FastAPI REST endpoints (auth, intake, doctor, etc.)
-│   │   ├── core/               # Database, settings, security & rate limiting
-│   │   ├── models/             # SQLAlchemy ORM models (Patients, Encounters, etc.)
+│   │   ├── api/v1/             # Endpoints (auth, intake, abdm, doctor, encounters)
+│   │   ├── core/               # Database engine, config, security & rate limiting
+│   │   ├── models/             # SQLAlchemy ORM clinical models
 │   │   ├── schemas/            # Pydantic validation schemas
-│   │   └── services/           # Business logic (LLMs, ASR, OCR, Triage, Summary)
+│   │   └── services/           # LLM chains, Whisper ASR, OCR, Safety normalizers
 │   ├── scripts/                # Database seeders (seed.py, seed_encounters.py)
-│   ├── tests/                  # Pytest automated test suite
-│   ├── Dockerfile              # Backend container definition
-│   └── pyproject.toml          # Python package definitions
+│   ├── tests/                  # Pytest test suite (55 automated tests)
+│   └── Dockerfile              # Backend container definition
 │
-├── web/
+├── mobile/                     # Flutter Android Patient Application
+│   ├── lib/
+│   │   ├── core/
+│   │   │   ├── models/         # JSON data models for intake & ABDM
+│   │   │   ├── network/        # Dio client, interceptors, session manager
+│   │   │   ├── router/         # GoRouter path definitions (all 26 screens)
+│   │   │   └── theme/          # AppTheme, Flowstep colors, typography, radii
+│   │   ├── features/
+│   │   │   ├── onboarding/     # Screen 01 Welcome
+│   │   │   ├── identity/       # Screens 03-05 ABHA ID, OTP, Profile
+│   │   │   ├── consent/        # Screen 06 Patient Data Privacy Notice
+│   │   │   ├── interview/      # Screens 07-12 Voice, Transcript, Prakriti
+│   │   │   ├── documents/      # Screens 13-15, 21, 23 Scanner, OCR, Multipage
+│   │   │   ├── review/         # Screen 16 Clinical Case Review Summary
+│   │   │   ├── completion/     # Screens 17 & 26 Live OPD Queue Token & Pharmacy
+│   │   │   └── system/         # Screens 18-20, 22, 24, 25 Offline, Lock, Errors
+│   │   └── shared/widgets/     # AppHeader, StatusBadge, AppButton, ChoiceCard
+│   └── test/                   # Flutter unit & widget test suite
+│
+├── web/                        # React 18 TypeScript Doctor Clinical Portal
 │   ├── src/
-│   │   ├── components/         # Reusable UI components (Modals, Buttons, Badges)
-│   │   ├── layouts/            # Doctor & Patient page layouts
-│   │   ├── pages/              # Landing page, Doctor Queue, Encounter Chart, etc.
-│   │   ├── services/           # TanStack Query API hooks
-│   │   └── styles/             # Global CSS & Design System tokens
-│   ├── package.json            # Node.js dependencies
-│   └── vite.config.ts          # Vite bundler & API proxy configuration
+│   │   ├── features/           # Doctor Login, OPD Queue, Encounter Chart
+│   │   ├── components/         # Design system components
+│   │   └── api/                # Axios API client
+│   └── vite.config.ts          # Vite build configuration
 │
-├── docker-compose.yml          # Postgres 16, MinIO, and Backend container orchestration
-├── Makefile                    # One-word convenience commands (make up, make dev-web)
+├── design/                     # Approved Flowstep Visual Source of Truth
+│   └── patient_mobile_app/     # Screen JSX code & design references
+├── docker-compose.yml          # PostgreSQL 16, MinIO, Backend orchestration
+├── Makefile                    # CLI shortcuts (make up, make test, etc.)
 └── README.md                   # Project documentation
-```
-
----
-
-## ⚡ Helpful Makefile Commands
-
-If you have `make` installed, you can use these shortcuts:
-
-```bash
-make help          # View all available make targets
-make up            # Start PostgreSQL and MinIO containers in background
-make down          # Stop all containers
-make migrate       # Run database migrations
-make seed          # Seed database with sample data
-make dev-backend   # Launch FastAPI server locally with live reload
-make dev-web       # Launch React Vite dev server
-make test          # Run the pytest test suite
-make clean         # Wipe Docker containers and volumes (caution: removes DB data)
 ```
 
 ---
 
 ## ❓ Troubleshooting & FAQs
 
-### 1. `Port 5432 is already in use`
-- **Cause:** You may already have a local PostgreSQL server running on your system.
-- **Solution:** Either stop your local postgres (`brew services stop postgresql` on macOS, or `sudo systemctl stop postgresql` on Linux), or switch `DATABASE_URL` in `backend/.env` to point to your existing Postgres instance or SQLite.
+### 1. `SocketException: Connection refused` on Android device
+- **Cause**: The Android device cannot reach `http://127.0.0.1:8000` because `127.0.0.1` refers to the mobile phone itself.
+- **Solution**: Run `adb reverse tcp:8000 tcp:8000` to route phone port 8000 to your host machine's port 8000. For Android Emulator, use `http://10.0.2.2:8000`.
 
-### 2. `alembic: command not found`
-- **Cause:** Virtual environment is not activated or dependencies are not installed.
-- **Solution:** Run `source backend/venv/bin/activate` and `pip install -e ".[dev]"`.
+### 2. `Microphone Permission Denied` on Android 14/15/16
+- **Solution**: The app automatically shows Screen 20 (`MicrophonePermissionDeniedScreen`) with step-by-step guidance to enable audio permissions in Android Settings, or allows immediate one-tap transition to text typing mode.
 
-### 3. `Failed to fetch / Network Error in Frontend`
-- **Cause:** Backend server is not running on port 8000.
-- **Solution:** Verify that `uvicorn app.main:app --port 8000` is running in your backend terminal. Test by opening [http://localhost:8000/docs](http://localhost:8000/docs).
-
-### 4. `Groq API Error / Model Not Found`
-- **Cause:** Invalid API key or model name in `backend/.env`.
-- **Solution:** Ensure `GROQ_API_KEY` is set. Recommended model is `qwen/qwen3.6-27b` or `llama-3.1-8b-instant`. Even if the API key is missing, SwasthyaSaathi's deterministic fallback engine guarantees uninterrupted pre-consultation flow.
+### 3. `alembic: command not found`
+- **Solution**: Activate your virtual environment first (`source backend/venv/bin/activate` or `source .venv/bin/activate`) and run `pip install -e ".[dev]"`.
 
 ---
 
 ## 👥 Contributors & Acknowledgements
-Built for the **Smart India Hackathon (SIH)** — Transforming pre-consultation OPD efficiency across AYUSH Healthcare Institutions.
+Built for the **Smart India Hackathon (SIH)** — Transforming pre-consultation OPD efficiency across AYUSH Healthcare Institutions through safe, assistive clinical intelligence.

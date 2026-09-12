@@ -21,15 +21,17 @@ app = FastAPI(
 # Security Headers
 app.add_middleware(SecurityHeadersMiddleware)
 
-# CORS — allows the React web app to call the API
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=settings.cors_origins,
-    allow_origin_regex=".*",
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# CORS — allows the web apps to call the API
+cors_kwargs = {
+    "allow_origins": settings.cors_origins,
+    "allow_credentials": True,
+    "allow_methods": ["*"],
+    "allow_headers": ["*"],
+}
+if settings.environment != "production":
+    cors_kwargs["allow_origin_regex"] = ".*"
+
+app.add_middleware(CORSMiddleware, **cors_kwargs)
 
 app.include_router(api_router)
 

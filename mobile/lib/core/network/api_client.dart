@@ -7,8 +7,8 @@ import '../models/api_models.dart';
 // Provide the Dio instance
 final dioProvider = Provider<Dio>((ref) {
   final dio = Dio(BaseOptions(
-    // Localhost for Android Emulator. Use appropriate URL for production
-    baseUrl: const String.fromEnvironment('API_BASE_URL', defaultValue: 'http://192.168.29.20:8000/api/v1/intake'),
+    // Default to localhost:8000 for local development/emulator
+    baseUrl: const String.fromEnvironment('API_BASE_URL', defaultValue: 'http://127.0.0.1:8000/api/v1'),
     connectTimeout: const Duration(seconds: 15),
     receiveTimeout: const Duration(seconds: 30),
     headers: {
@@ -16,20 +16,11 @@ final dioProvider = Provider<Dio>((ref) {
     },
   ));
 
-  // Add interceptor to log or handle global errors without exposing tokens
   dio.interceptors.add(InterceptorsWrapper(
     onRequest: (options, handler) {
-      // Intentionally do NOT log headers or Authorization here to prevent token leakage
       handler.next(options);
     },
     onError: (DioException e, handler) {
-      // Do NOT log the request headers/tokens on error
-      final statusCode = e.response?.statusCode;
-      if (statusCode == 401 || statusCode == 403) {
-        // Session expired or invalid
-      } else if (statusCode == 429) {
-        // Rate limit
-      }
       handler.next(e);
     },
   ));
@@ -59,26 +50,36 @@ class ApiClient {
     return token;
   }
 
+  // Create isolated demo session from QR scan CTA
+  Future<Map<String, dynamic>> createDemoSession() async {
+    final response = await _dio.post('/intake/demo/create');
+    final data = response.data as Map<String, dynamic>;
+    final token = (data['token'] ?? data['public_token']) as String;
+    _sessionManager.setSession(token);
+    return data;
+  }
+
   Future<SessionStatus> getSessionStatus(String token) async {
-    final response = await _dio.get('/$token');
-    return SessionStatus.fromJson(response.data);
+    final response = await _dio.get('/intake/$token');
+    _sessionManager.setSession(token);
+    return SessionStatus.fromJson(response.data as Map<String, dynamic>);
   }
 
   Future<SessionStatus> submitConsent(ConsentPayload payload) async {
     final token = _getToken();
-    final response = await _dio.post('/$token/consent', data: payload.toJson());
-    return SessionStatus.fromJson(response.data);
+    final response = await _dio.post('/intake/$token/consent', data: payload.toJson());
+    return SessionStatus.fromJson(response.data as Map<String, dynamic>);
   }
 
   Future<NextQuestionResponse> getNextQuestion() async {
     final token = _getToken();
-    final response = await _dio.post('/$token/interview/next');
-    return NextQuestionResponse.fromJson(response.data);
+    final response = await _dio.post('/intake/$token/interview/next');
+    return NextQuestionResponse.fromJson(response.data as Map<String, dynamic>);
   }
 
   Future<void> submitAnswer(AnswerPayload payload) async {
     final token = _getToken();
-    await _dio.post('/$token/interview/answer', data: payload.toJson());
+    await _dio.post('/intake/$token/interview/answer', data: payload.toJson());
   }
 
   Future<Map<String, dynamic>> uploadVoice({
@@ -93,7 +94,7 @@ class ApiClient {
       'file': await MultipartFile.fromFile(file.path),
     });
 
-    final response = await _dio.post('/$token/upload/voice', data: formData);
+    final response = await _dio.post('/intake/$token/upload/voice', data: formData);
     return response.data as Map<String, dynamic>;
   }
 
@@ -103,18 +104,56 @@ class ApiClient {
       'file': await MultipartFile.fromFile(file.path),
     });
 
-    final response = await _dio.post('/$token/upload/document', data: formData);
+    final response = await _dio.post('/intake/$token/upload/document', data: formData);
     return response.data as Map<String, dynamic>;
   }
 
   Future<ReviewSummary> getReviewSummary() async {
     final token = _getToken();
-    final response = await _dio.get('/$token/review');
-    return ReviewSummary.fromJson(response.data);
+    final response = await _dio.get('/intake/$token/review');
+    return ReviewSummary.fromJson(response.data as Map<String, dynamic>);
   }
 
   Future<void> confirmReview() async {
     final token = _getToken();
-    await _dio.post('/$token/confirm');
+    await _dio.post('/intake/$token/confirm');
+  }
+
+  // ABDM Integration
+  Future<Map<String, dynamic>> getAbdmStatus() async {
+    final response = await _dio.get('/abdm/status');
+    return response.data as Map<String, dynamic>;
+  }
+
+  Future<AbdmRequestOtpResponse> requestAbdmOtp({
+    required String identifier,
+    String authMode = "MOBILE_OTP",
+  }) async {
+    final token = _getToken();
+    final response = await _dio.post(
+      '/abdm/$token/request-otp',
+      data: {
+        'auth_mode': authMode,
+        'identifier': identifier,
+      },
+    );
+    return AbdmRequestOtpResponse.fromJson(response.data as Map<String, dynamic>);
+  }
+
+  Future<AbdmVerifyOtpResponse> verifyAbdmOtp({
+    required String txnId,
+    required String otp,
+    String authMode = "MOBILE_OTP",
+  }) async {
+    final token = _getToken();
+    final response = await _dio.post(
+      '/abdm/$token/verify-otp',
+      data: {
+        'auth_mode': authMode,
+        'txn_id': txnId,
+        'otp': otp,
+      },
+    );
+    return AbdmVerifyOtpResponse.fromJson(response.data as Map<String, dynamic>);
   }
 }

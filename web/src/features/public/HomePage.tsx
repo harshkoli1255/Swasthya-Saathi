@@ -76,14 +76,25 @@ export function HomePage() {
                 Experience Patient Intake
               </Button>
               
-              <Button 
-                variant="secondary" 
-                size="lg" 
-                onClick={() => navigate('/doctor/login')}
-                style={{ paddingInline: 'var(--space-6)' }}
-              >
-                Physician Workstation →
-              </Button>
+              {import.meta.env.VITE_APP_SURFACE !== 'patient' ? (
+                <Button 
+                  variant="secondary" 
+                  size="lg" 
+                  onClick={() => navigate('/doctor/login')}
+                  style={{ paddingInline: 'var(--space-6)' }}
+                >
+                  Physician Workstation →
+                </Button>
+              ) : (
+                <Button 
+                  variant="secondary" 
+                  size="lg" 
+                  onClick={() => navigate('/about')}
+                  style={{ paddingInline: 'var(--space-6)' }}
+                >
+                  Clinical Architecture & Ethics →
+                </Button>
+              )}
             </div>
 
             {error && (
@@ -552,9 +563,15 @@ export function HomePage() {
             <Button size="lg" onClick={handleStartDemo} isLoading={demoLoading}>
               Launch Patient Intake
             </Button>
-            <Button variant="secondary" size="lg" onClick={() => navigate('/doctor/login')}>
-              Physician Workstation →
-            </Button>
+            {import.meta.env.VITE_APP_SURFACE !== 'patient' ? (
+              <Button variant="secondary" size="lg" onClick={() => navigate('/doctor/login')}>
+                Physician Workstation →
+              </Button>
+            ) : (
+              <Button variant="secondary" size="lg" onClick={() => navigate('/about')}>
+                Clinical Standards & Ethics →
+              </Button>
+            )}
           </div>
 
           <div style={{ marginTop: 'var(--space-6)' }}>

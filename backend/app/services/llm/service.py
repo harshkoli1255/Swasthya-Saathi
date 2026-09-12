@@ -24,22 +24,25 @@ class LLMService:
         """
         providers = []
         
-        # Primary Provider
-        if settings.ai_primary_provider == "groq":
-            providers.append(("Groq", self.groq))
-        elif settings.ai_primary_provider == "gemini":
+        # Primary & Cloud Fallback Chain (Default: Gemini -> Groq)
+        if settings.ai_primary_provider == "gemini":
             providers.append(("Gemini", self.gemini))
+            if settings.feature_cloud_ai_fallback:
+                providers.append(("Groq", self.groq))
+        elif settings.ai_primary_provider == "groq":
+            providers.append(("Groq", self.groq))
+            if settings.feature_cloud_ai_fallback:
+                providers.append(("Gemini", self.gemini))
         elif settings.ai_primary_provider == "ollama":
             providers.append(("Ollama", self.ollama))
-            
-        # Fallbacks
-        if settings.feature_cloud_ai_fallback:
-            if settings.ai_primary_provider != "groq":
-                providers.append(("Groq", self.groq))
-            if settings.ai_primary_provider != "gemini":
+            if settings.feature_cloud_ai_fallback:
                 providers.append(("Gemini", self.gemini))
-        if settings.ai_primary_provider != "ollama":
-            providers.append(("Ollama", self.ollama))
+                providers.append(("Groq", self.groq))
+        else:
+            # Default: Gemini primary, Groq fallback
+            providers.append(("Gemini", self.gemini))
+            if settings.feature_cloud_ai_fallback:
+                providers.append(("Groq", self.groq))
             
         # Deduplicate while preserving order
         seen = set()

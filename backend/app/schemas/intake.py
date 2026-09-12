@@ -16,7 +16,13 @@ class SessionStatus(BaseModel):
     verification_reference: Optional[str] = None
     abha_number: Optional[str] = None
     abha_address: Optional[str] = None
+    opd_id: Optional[str] = None
     language: str
+    encounter_status: Optional[str] = None
+    queue_position: Optional[int] = None
+    queue_ahead: Optional[int] = None
+    estimated_wait_minutes: Optional[int] = None
+    calling_token: Optional[str] = None
 
 
 class ABDMStatusResponse(BaseModel):

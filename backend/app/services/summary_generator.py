@@ -10,21 +10,23 @@ import json
 logger = logging.getLogger(__name__)
 
 class SummaryGenerator:
-    def __init__(self, llm_provider=None):
+    def __init__(self, llm_provider=None, fallback_provider=None):
         self.llm_provider = llm_provider
+        self.fallback_provider = fallback_provider
 
     def generate_summary(self, db: Session, session_id: uuid.UUID) -> StructuredSummaryResult:
         """
         Generates a summary of confirmed/verified clinical facts.
+        Attempts primary provider first, fallback provider next, then deterministic.
         """
         facts = db.query(ClinicalAnswer).join(ClinicalAnswer.turn).filter(
             ClinicalAnswer.turn.has(session_id=session_id)
         ).all()
         
-        # Use confirmed, verified, or normalized facts for synthesis
+        # Use confirmed or verified facts for synthesis
         valid_facts = [
             f for f in facts 
-            if f.status in ("PATIENT_CONFIRMED", "PHYSICIAN_VERIFIED", "AI_NORMALIZED", "DETERMINISTIC_NORMALIZED")
+            if f.status in ("PATIENT_CONFIRMED", "PHYSICIAN_VERIFIED")
         ]
         
         if not valid_facts:
@@ -43,23 +45,28 @@ class SummaryGenerator:
 
         allowed_evidence_ids = {str(f.evidence_id) for f in valid_facts if f.evidence_id}
         
-        # Fallback condition: if no LLM provider or failure occurs
-        try:
-            if not self.llm_provider:
-                return self._generate_deterministic_fallback(valid_facts)
-                
-            # Attempt LLM generation
-            prompt = self._build_prompt(valid_facts)
-            
-            # Assuming llm_provider has a `generate_structured_summary` method
-            result = self.llm_provider.generate_structured_summary(prompt)
-            
-            # Validate output evidence IDs
-            return self._validate_and_sanitize(result, allowed_evidence_ids, valid_facts)
-            
-        except Exception as e:
-            logger.error(f"LLM summary generation failed: {e}. Falling back to deterministic.")
+        providers = []
+        if self.llm_provider:
+            providers.append(self.llm_provider)
+        if self.fallback_provider and self.fallback_provider is not self.llm_provider:
+            providers.append(self.fallback_provider)
+
+        if not providers:
             return self._generate_deterministic_fallback(valid_facts)
+
+        prompt = self._build_prompt(valid_facts)
+        for provider in providers:
+            try:
+                provider_name = type(provider).__name__
+                logger.info(f"Attempting clinical summary generation with {provider_name}")
+                result = provider.generate_structured_summary(prompt)
+                if result:
+                    return self._validate_and_sanitize(result, allowed_evidence_ids, valid_facts)
+            except Exception as e:
+                logger.warning(f"Summary generation with {type(provider).__name__} failed: {e}")
+
+        logger.info("All AI summary providers failed or unavailable. Using deterministic fallback.")
+        return self._generate_deterministic_fallback(valid_facts)
             
     def _build_prompt(self, facts: List[ClinicalAnswer]) -> str:
         prompt = "Create a clinical summary using ONLY the following facts:\n"

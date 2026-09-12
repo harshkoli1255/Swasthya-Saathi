@@ -8,6 +8,10 @@ class SessionManager extends Notifier<String?> {
     state = token;
   }
 
+  void setSession(String token) {
+    state = token;
+  }
+
   void clearSession() {
     state = null;
   }

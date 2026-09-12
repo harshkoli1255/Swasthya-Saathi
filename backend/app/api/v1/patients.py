@@ -14,6 +14,7 @@ router = APIRouter(prefix="/patients", tags=["patients"])
 @router.post("", response_model=PatientPublic, summary="Register a new patient")
 def create_patient(
     payload: PatientCreate,
+    current_user: Annotated[User, Depends(require_doctor)],
     db: Session = Depends(get_db),
 ) -> PatientPublic:
     """
